@@ -7,7 +7,7 @@ export const products = [
   {
     id: 2,
     img: "https://www.linkpicture.com/q/letswatch-min.png",
-    link: "letswatch-pi.vercel.app",
+    link: "https://letswatch-pi.vercel.app/",
   },
   {
     id: 3,

@@ -28,7 +28,11 @@
 
 @media screen and (max-width: 480px) {
   .pl {
-    padding: 10px;
+    padding: 50px 10px;
+  }
+
+  .pl-title{
+    font-size: 30px;
   }
 
   .pl-texts {

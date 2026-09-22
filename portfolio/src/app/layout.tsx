@@ -24,6 +24,29 @@ export async function generateMetadata(): Promise<Metadata> {
       "Node.js",
       "TypeScript",
     ],
+    icons: {
+      icon: [
+        { url: "/icon/favicon.ico" },
+        {
+          url: "/icon/favicon-16x16.png",
+          sizes: "16x16",
+          type: "image/png",
+        },
+        {
+          url: "/icon/favicon-32x32.png",
+          sizes: "32x32",
+          type: "image/png",
+        },
+      ],
+      apple: [
+        {
+          url: "/icon/apple-touch-icon.png",
+          sizes: "180x180",
+          type: "image/png",
+        },
+      ],
+    },
+    manifest: "/icon/site.webmanifest",
     openGraph: {
       title: `${profileName} | ${profileTitle} & Full-Stack Developer`,
       description: profileBio,
@@ -31,9 +54,9 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: `${profileName} Portfolio`,
       images: [
         {
-          url: new URL("/image/hero-image.png", siteUrl).toString(),
-          width: 1200,
-          height: 630,
+          url: new URL("/image/zahid.png", siteUrl).toString(),
+          width: 1254,
+          height: 1254,
           alt: `${profileName} Portfolio`,
         },
       ],
@@ -44,7 +67,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: `${profileName} | ${profileTitle} & Full-Stack Developer`,
       description: profileBio,
-      images: [new URL("/image/hero-image.png", siteUrl).toString()],
+      images: [new URL("/image/zahid.png", siteUrl).toString()],
     },
     alternates: {
       canonical: siteUrl,

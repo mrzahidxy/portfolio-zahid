@@ -20,7 +20,7 @@ export default function OSAboutContent({
       >
         <div className="overflow-hidden rounded-lg border border-slate-300 bg-slate-950 shadow-inner">
           <Image
-            src="/image/about.png"
+            src="/image/zahid.png"
             alt={profile.personal_details.name}
             width={460}
             height={460}

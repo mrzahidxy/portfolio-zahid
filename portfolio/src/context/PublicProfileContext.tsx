@@ -98,11 +98,13 @@ const PublicProfileContext = createContext<PublicProfileContextValue>({
 
 export function PublicProfileProvider({
   children,
+  initialProfile = emptyPublicProfileData,
 }: {
   children: React.ReactNode;
+  initialProfile?: PublicProfileData;
 }) {
   const [profile, setProfile] = useState<PublicProfileData>(
-    emptyPublicProfileData
+    initialProfile
   );
   const [loading] = useState(false);
 

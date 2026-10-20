@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { PublicProfileProvider } from "@/context/PublicProfileContext";
-import { readStaticProfileContent } from "@/lib/profile-content";
+import {
+  readStaticProfileContent,
+  readStaticPublicProfileContent,
+} from "@/lib/profile-content";
 import { getSiteUrl } from "@/lib/site-url";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -28,8 +31,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const initialProfile = await readStaticPublicProfileContent();
+
   return (
-    <PublicProfileProvider>
+    <PublicProfileProvider initialProfile={initialProfile}>
       <main>{children}</main>
     </PublicProfileProvider>
   );

@@ -51,10 +51,10 @@ const About: React.FC<AboutProps> = ({
           <div className="mx-auto w-full max-w-[220px] space-y-4 lg:mx-0">
             <div className="overflow-hidden rounded-[24px] border border-slate-200/70 bg-white/75 shadow-[0_18px_45px_rgba(15,23,42,0.05)] dark:border-slate-800/80 dark:bg-slate-900/70">
               <Image
-                src="/image/about.png"
+                src="/image/zahid.png"
                 alt={personalDetails.name}
                 width={220}
-                height={190}
+                height={220}
                 className="h-[190px] w-full object-cover object-top"
               />
             </div>

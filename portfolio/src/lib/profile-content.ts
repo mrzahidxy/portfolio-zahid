@@ -1,6 +1,6 @@
 import { promises as fs } from "fs";
 import path from "path";
-import dbConnect from "@/lib/dbConnect";
+import dbConnect, { dbConnectForPublicRead } from "@/lib/dbConnect";
 import { createLogger } from "@/lib/logger";
 import PortfolioContent from "@/models/PortfolioContent";
 import type { AdminProfilePayload } from "./profile-admin";
@@ -92,6 +92,10 @@ async function readProfileFromFile(): Promise<ProfileContent> {
 
 export async function readStaticProfileContent(): Promise<ProfileContent> {
   return readProfileFromFile();
+}
+
+export async function readStaticPublicProfileContent(): Promise<PublicProfileData> {
+  return pickPublicProfileContent(await readProfileFromFile());
 }
 
 type PortfolioContentRecord = Partial<ProfileContent> & {
@@ -273,7 +277,7 @@ export async function readPublicProfileApiContent(): Promise<PublicProfileData> 
   const fileProfile = await readProfileFromFile();
 
   try {
-    const connection = await dbConnect();
+    const connection = await dbConnectForPublicRead();
 
     if (!connection) {
       return pickPublicProfileContent(fileProfile);
@@ -301,7 +305,28 @@ export async function listPublicFallbackProjects(): Promise<Project[]> {
 }
 
 export async function listPublicExperiences(): Promise<ProfileExperience[]> {
-  return listAdminExperiences();
+  const fileProfile = await readProfileFromFile();
+
+  try {
+    const connection = await dbConnectForPublicRead();
+
+    if (!connection) {
+      return fileProfile.history.experiences;
+    }
+
+    const record = await PortfolioContent.findOne({
+      key: PORTFOLIO_CONTENT_KEY,
+    }).lean<PortfolioContentRecord>();
+
+    if (!record) {
+      return [];
+    }
+
+    return mergeProfileRecordWithFile(fileProfile, record).history.experiences;
+  } catch (error) {
+    log.warn("Falling back to file-based experience content.", error);
+    return fileProfile.history.experiences;
+  }
 }
 
 export async function readAdminProfileApiContent(): Promise<AdminProfilePayload> {

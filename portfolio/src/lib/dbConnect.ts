@@ -47,23 +47,56 @@ const connectWithCache = async () => {
   }
 };
 
-async function dbConnect() {
-  const uri = getMongoUri();
-
-  if (!uri) {
-    log.warn("MONGODB_URI is not defined. Database features will be unavailable.");
+const connectIfNeeded = (): Promise<typeof mongoose> | null => {
+  if (!getMongoUri()) {
     return null;
   }
 
-  if (isConnected(cached.conn)) {
-    return cached.conn;
+  const currentConnection = cached.conn;
+
+  if (currentConnection && isConnected(currentConnection)) {
+    return Promise.resolve(currentConnection);
   }
 
-  if (cached.conn && !isConnected(cached.conn)) {
+  if (currentConnection) {
     resetCache();
   }
 
   return connectWithCache();
+};
+
+async function dbConnect() {
+  const connection = connectIfNeeded();
+
+  if (!connection) {
+    log.warn("MONGODB_URI is not defined. Database features will be unavailable.");
+    return null;
+  }
+
+  return connection;
+}
+
+export async function dbConnectForPublicRead(timeoutMs = 400) {
+  const connection = connectIfNeeded();
+
+  if (!connection) {
+    return null;
+  }
+
+  let timeout: NodeJS.Timeout | undefined;
+
+  try {
+    return await Promise.race([
+      connection,
+      new Promise<null>((resolve) => {
+        timeout = setTimeout(() => resolve(null), timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+  }
 }
 
 export function isMongoReady() {

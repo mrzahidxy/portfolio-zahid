@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import Project, { IProject } from "@/models/Project";
-import dbConnect from "@/lib/dbConnect";
+import { dbConnectForPublicRead } from "@/lib/dbConnect";
 import { createLogger } from "@/lib/logger";
 import { listPublicFallbackProjects } from "@/lib/profile-content";
 
@@ -16,7 +16,7 @@ const withPublicCache = <T>(payload: T) =>
 
 export async function GET() {
   try {
-    const connection = await dbConnect();
+    const connection = await dbConnectForPublicRead();
     if (!connection) {
       const projects = await listPublicFallbackProjects();
       return withPublicCache({ success: true, data: projects });

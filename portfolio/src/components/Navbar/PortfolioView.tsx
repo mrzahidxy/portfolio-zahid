@@ -1,14 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
-const DEFAULT_SOCKET_URL =
-  process.env.NODE_ENV === "development" ? "ws://localhost:8010" : "";
-const DEFAULT_API_URL =
-  process.env.NODE_ENV === "development" ? "http://localhost:8010" : "";
 const SOCKET_URL =
-  process.env.NEXT_PUBLIC_WEBSOCKET_URL?.trim() || DEFAULT_SOCKET_URL;
+  process.env.NEXT_PUBLIC_WEBSOCKET_URL?.trim() || "";
 const API_URL =
-  process.env.NEXT_PUBLIC_VISIT_API_URL?.trim() || DEFAULT_API_URL;
-const shouldConnectVisitCounter = Boolean(SOCKET_URL);
+  process.env.NEXT_PUBLIC_VISIT_API_URL?.trim() || "";
+const shouldConnectVisitCounter = Boolean(SOCKET_URL && API_URL);
 
 function PortfolioView() {
   const [visitCount, setVisitCount] = useState<number>(0);
@@ -70,6 +66,10 @@ function PortfolioView() {
       console.error("Visit API error:", error),
     );
   }, []);
+
+  if (!shouldConnectVisitCounter) {
+    return null;
+  }
 
   return (
     <div className="fixed bottom-5 left-4 z-50 flex items-center gap-2.5 rounded-full border border-slate-200/80 bg-white/85 px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-[0_16px_40px_rgba(15,23,42,0.12)] backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85 dark:text-slate-100 sm:left-6">

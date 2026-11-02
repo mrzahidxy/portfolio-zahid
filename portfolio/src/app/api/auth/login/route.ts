@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if email already exists
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email.trim().toLowerCase() });
     if (!user)
       return NextResponse.json(
         { success: false, error: "Invalid email or password" },
@@ -64,10 +64,14 @@ export async function POST(req: NextRequest) {
       { expiresIn: "3d" }
     );
 
-    const { password: _, ...others } = (user as any)._doc;
+    const publicUser = {
+      id: String(user._id),
+      email: user.email,
+      isAdmin: user.isAdmin === true,
+    };
 
     const response = NextResponse.json(
-      { success: true, data: { ...others, accessToken } },
+      { success: true, data: { ...publicUser, accessToken } },
       { status: 200 }
     );
 

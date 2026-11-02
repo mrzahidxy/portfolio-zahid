@@ -22,9 +22,13 @@ export default function DashboardPage() {
   const [loadingStats, setLoadingStats] = useState(true);
   const [statsError, setStatsError] = useState<string | null>(null);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } finally {
     dispatch({ type: "LOGOUT" });
     router.replace("/admin/login");
+    }
   };
 
   const fetchCounts = useCallback(async () => {

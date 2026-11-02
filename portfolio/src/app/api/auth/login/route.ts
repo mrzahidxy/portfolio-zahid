@@ -1,5 +1,5 @@
 import CryptoJS from "crypto-js";
-import jwt from "jsonwebtoken";
+import { SignJWT } from "jose";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 import { NextRequest, NextResponse } from "next/server";
@@ -58,11 +58,14 @@ export async function POST(req: NextRequest) {
       );
 
     // Create JWT token
-    const accessToken = jwt.sign(
-      { id: user._id, isAdmin: user.isAdmin },
-      jwtSecret,
-      { expiresIn: "3d" }
-    );
+    const accessToken = await new SignJWT({
+      id: String(user._id),
+      isAdmin: user.isAdmin === true,
+    })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setExpirationTime("3d")
+      .sign(new TextEncoder().encode(jwtSecret));
 
     const publicUser = {
       id: String(user._id),

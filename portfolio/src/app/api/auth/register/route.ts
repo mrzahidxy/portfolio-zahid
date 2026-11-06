@@ -15,9 +15,15 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { email, password, isAdmin = false } = await req.json();
-
   try {
+    const body = await req.json();
+    const { email, password } = body ?? {};
+    if (typeof email !== "string" || typeof password !== "string" || !email.trim() || !password) {
+      return NextResponse.json(
+        { success: false, message: "Email and password are required." },
+        { status: 400 }
+      );
+    }
     // Check if email already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -40,11 +46,12 @@ export async function POST(req: NextRequest) {
       passSecret
     ).toString();
     // Create and save new user
-    const newUser = new User({ email, password: encryptedPassword, isAdmin });
+    // Public registration must never grant privileged roles from caller input.
+    const newUser = new User({ email: email.trim().toLowerCase(), password: encryptedPassword, isAdmin: false });
     const savedUser = await newUser.save();
 
     return NextResponse.json(
-      { success: true, user: savedUser },
+      { success: true, user: { id: String(savedUser._id), email: savedUser.email, isAdmin: false } },
       { status: 201 }
     );
   } catch (error) {

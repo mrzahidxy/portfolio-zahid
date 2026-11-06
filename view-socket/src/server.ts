@@ -115,6 +115,7 @@ wss.on("connection", async (ws: WebSocket) => {
     ws.send(JSON.stringify({ type: "visit_count", count: visitCount }));
   } catch (error) {
     console.error("Error sending initial visit count:", error);
+    ws.close();
   }
 
   ws.on("close", () => {

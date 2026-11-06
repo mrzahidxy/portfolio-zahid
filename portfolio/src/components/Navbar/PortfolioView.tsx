@@ -11,7 +11,8 @@ function PortfolioView() {
   const [status, setStatus] = useState<
     "connecting" | "connected" | "disconnected"
   >(shouldConnectVisitCounter ? "connecting" : "disconnected");
-  const reconnectTimer = useRef<NodeJS.Timeout | null>(null);
+  const reconnectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     if (!shouldConnectVisitCounter) {
@@ -19,17 +20,21 @@ function PortfolioView() {
       return;
     }
 
+    let shouldReconnect = true;
+
     const connect = () => {
+      if (!shouldReconnect) return;
+
       setStatus("connecting");
       const socket = new WebSocket(SOCKET_URL);
-
-      socket.onopen = () => setStatus("connected");
+      socketRef.current = socket;
 
       socket.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          if (data.type === "visit_count") {
+          if (data.type === "visit_count" && Number.isFinite(data.count)) {
             setVisitCount(data.count);
+            setStatus("connected");
           }
         } catch (error) {
           console.error("Invalid message from socket:", error);
@@ -41,19 +46,26 @@ function PortfolioView() {
       };
 
       socket.onclose = () => {
+        if (socketRef.current === socket) {
+          socketRef.current = null;
+        }
         setStatus("disconnected");
-        reconnectTimer.current = setTimeout(connect, 3000);
+        if (shouldReconnect) {
+          reconnectTimer.current = setTimeout(connect, 3000);
+        }
       };
 
       return socket;
     };
 
-    const socket = connect();
+    connect();
     return () => {
-      socket.close();
+      shouldReconnect = false;
       if (reconnectTimer.current) {
         clearTimeout(reconnectTimer.current);
       }
+      socketRef.current?.close();
+      socketRef.current = null;
     };
   }, []);
 

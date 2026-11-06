@@ -24,8 +24,9 @@ async function authorizeRequest(
     );
   }
 
-  const [scheme, token] = authHeader.split(" ");
-  if (scheme !== "Bearer" || !token) {
+  const bearerMatch = /^Bearer\s+(\S+)$/i.exec(authHeader.trim());
+  const token = bearerMatch?.[1];
+  if (!token) {
     return NextResponse.json(
       { success: false, error: "User is unauthenticated." },
       { status: 401 }

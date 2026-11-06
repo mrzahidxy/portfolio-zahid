@@ -32,7 +32,7 @@ export class GroqProviderError extends Error {
 
 export async function createGroqChatCompletion(messages: GroqMessage[]) {
   const apiKey = process.env.GROQ_API_KEY;
-  const model = process.env.GROQ_MODEL || "llama-3.1-8b-instant";
+  const model = process.env.GROQ_MODEL || "openai/gpt-oss-20b";
 
   if (!apiKey) {
     throw new GroqProviderError("Groq API key is not configured.", 500);

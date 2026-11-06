@@ -30,22 +30,22 @@ Data comes from a mix of file-backed defaults and MongoDB-backed records. The pu
 
 ## Main App Areas
 - Public homepage
-  - [src/app/(root)/page.tsx](/mnt/c/Users/mrzah/Desktop/Projects/portfolio/potfolio-zahid/portfolio/src/app/(root)/page.tsx)
-  - [src/components/HomeProfileSections.tsx](/mnt/c/Users/mrzah/Desktop/Projects/portfolio/potfolio-zahid/portfolio/src/components/HomeProfileSections.tsx)
-  - [src/components/HomeContactSection.tsx](/mnt/c/Users/mrzah/Desktop/Projects/portfolio/potfolio-zahid/portfolio/src/components/HomeContactSection.tsx)
+  - [src/app/(root)/page.tsx](src/app/(root)/page.tsx)
+  - [src/components/HomeProfileSections.tsx](src/components/HomeProfileSections.tsx)
+  - [src/components/HomeContactSection.tsx](src/components/HomeContactSection.tsx)
 - Public profile loading and fallback behavior
-  - [src/context/PublicProfileContext.tsx](/mnt/c/Users/mrzah/Desktop/Projects/portfolio/potfolio-zahid/portfolio/src/context/PublicProfileContext.tsx)
-  - [src/lib/profile-content.ts](/mnt/c/Users/mrzah/Desktop/Projects/portfolio/potfolio-zahid/portfolio/src/lib/profile-content.ts)
-  - [src/data/profile.json](/mnt/c/Users/mrzah/Desktop/Projects/portfolio/potfolio-zahid/portfolio/src/data/profile.json)
+  - [src/context/PublicProfileContext.tsx](src/context/PublicProfileContext.tsx)
+  - [src/lib/profile-content.ts](src/lib/profile-content.ts)
+  - [src/data/profile.json](src/data/profile.json)
 - Admin auth and layout
-  - [src/context/AuthContext.tsx](/mnt/c/Users/mrzah/Desktop/Projects/portfolio/potfolio-zahid/portfolio/src/context/AuthContext.tsx)
-  - [src/app/(admin)/AdminShell.tsx](/mnt/c/Users/mrzah/Desktop/Projects/portfolio/potfolio-zahid/portfolio/src/app/(admin)/AdminShell.tsx)
-  - [src/middleware/auth.ts](/mnt/c/Users/mrzah/Desktop/Projects/portfolio/potfolio-zahid/portfolio/src/middleware/auth.ts)
+  - [src/context/AuthContext.tsx](src/context/AuthContext.tsx)
+  - [src/app/(admin)/AdminShell.tsx](src/app/(admin)/AdminShell.tsx)
+  - [src/middleware/auth.ts](src/middleware/auth.ts)
 - Project and experience data flows
-  - [src/app/api/projects/route.ts](/mnt/c/Users/mrzah/Desktop/Projects/portfolio/potfolio-zahid/portfolio/src/app/api/projects/route.ts)
-  - [src/app/api/experiences/route.ts](/mnt/c/Users/mrzah/Desktop/Projects/portfolio/potfolio-zahid/portfolio/src/app/api/experiences/route.ts)
-  - [src/app/api/admin/projects/route.ts](/mnt/c/Users/mrzah/Desktop/Projects/portfolio/potfolio-zahid/portfolio/src/app/api/admin/projects/route.ts)
-  - [src/app/api/admin/experiences/route.ts](/mnt/c/Users/mrzah/Desktop/Projects/portfolio/potfolio-zahid/portfolio/src/app/api/admin/experiences/route.ts)
+  - [src/app/api/projects/route.ts](src/app/api/projects/route.ts)
+  - [src/app/api/experiences/route.ts](src/app/api/experiences/route.ts)
+  - [src/app/api/admin/projects/route.ts](src/app/api/admin/projects/route.ts)
+  - [src/app/api/admin/experiences/route.ts](src/app/api/admin/experiences/route.ts)
 
 ## Coding Principles
 - Prefer direct code over reusable-looking abstractions that only serve one place.

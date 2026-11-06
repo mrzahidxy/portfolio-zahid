@@ -72,9 +72,13 @@ export default function AdminShell({
     setMobileNavOpen(false);
   }, [pathname]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } finally {
     dispatch({ type: "LOGOUT" });
     router.replace("/admin/login");
+    }
   };
 
   const activeTitle =

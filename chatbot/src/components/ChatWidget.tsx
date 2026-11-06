@@ -164,8 +164,12 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
 
       <form onSubmit={handleSubmit} className="border-t border-slate-200 bg-white p-3">
         <div className="flex gap-2">
+          <label htmlFor="chat-message" className="sr-only">
+            Message the portfolio assistant
+          </label>
           <input
             ref={inputRef}
+            id="chat-message"
             value={input}
             onChange={(event) => setInput(event.target.value)}
             maxLength={1000}

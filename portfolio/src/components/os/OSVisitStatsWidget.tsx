@@ -18,6 +18,7 @@ export default function OSVisitStatsWidget() {
     "connecting" | "connected" | "disconnected"
   >(shouldConnectVisitCounter ? "connecting" : "disconnected");
   const reconnectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     if (!shouldConnectVisitCounter) {
@@ -30,15 +31,15 @@ export default function OSVisitStatsWidget() {
     const connect = () => {
       setStatus("connecting");
       const socket = new WebSocket(SOCKET_URL);
-
-      socket.onopen = () => setStatus("connected");
+      socketRef.current = socket;
 
       socket.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
 
-          if (data.type === "visit_count") {
+          if (data.type === "visit_count" && Number.isFinite(data.count)) {
             setVisitCount(data.count);
+            setStatus("connected");
           }
         } catch {
           setStatus("disconnected");
@@ -50,6 +51,9 @@ export default function OSVisitStatsWidget() {
       };
 
       socket.onclose = () => {
+        if (socketRef.current === socket) {
+          socketRef.current = null;
+        }
         setStatus("disconnected");
 
         if (shouldReconnect) {
@@ -60,7 +64,7 @@ export default function OSVisitStatsWidget() {
       return socket;
     };
 
-    const socket = connect();
+    connect();
 
     return () => {
       shouldReconnect = false;
@@ -68,8 +72,8 @@ export default function OSVisitStatsWidget() {
       if (reconnectTimer.current) {
         clearTimeout(reconnectTimer.current);
       }
-
-      socket.close();
+      socketRef.current?.close();
+      socketRef.current = null;
     };
   }, []);
 

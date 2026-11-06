@@ -203,7 +203,7 @@ const Contact: React.FC<ContactProps> = ({
                   <h3 className="text-lg font-semibold">
                     {content.details_heading}
                   </h3>
-                  <p className="text-[13px] leading-6 text-slate-200/82 sm:text-[14px]">
+                  <p className="text-[13px] leading-6 text-slate-200/[0.82] sm:text-[14px]">
                     {content.details_intro}
                   </p>
                 </div>
@@ -252,7 +252,7 @@ const Contact: React.FC<ContactProps> = ({
                       </a>
                     ))}
                   </div>
-                  <p className="text-[12px] leading-5 text-slate-300/82">
+                  <p className="text-[12px] leading-5 text-slate-300/[0.82]">
                     {content.quick_links_note}
                   </p>
                 </div>

@@ -4,19 +4,17 @@ import { dbConnectForPublicRead } from "@/lib/dbConnect";
 import { createLogger } from "@/lib/logger";
 import { listPublicFallbackProjects } from "@/lib/profile-content";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 const log = createLogger({ context: "api/projects" });
 
 const withPublicCache = <T>(payload: T) =>
   NextResponse.json(payload, {
-    headers: {
-      "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
-    },
+    headers: { "Cache-Control": "no-store, max-age=0" },
   });
 
 export async function GET() {
   try {
-    const connection = await dbConnectForPublicRead();
+    const connection = await dbConnectForPublicRead(5000);
     if (!connection) {
       const projects = await listPublicFallbackProjects();
       return withPublicCache({ success: true, data: projects });

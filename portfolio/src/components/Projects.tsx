@@ -29,7 +29,9 @@ const Projects: React.FC = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await api.get<ProjectApiResponse>(`/projects`);
+        const response = await api.get<ProjectApiResponse>(`/projects`, {
+          headers: { "Cache-Control": "no-cache" },
+        });
         setProjects(response.data.data);
       } catch (error) {
         console.error("Error fetching projects:", error);

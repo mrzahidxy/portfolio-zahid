@@ -29,11 +29,11 @@ const FeatureCard: React.FC<Props> = ({ project }) => {
             className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-lg font-semibold text-slate-300 dark:text-slate-500">
+          <div className="flex h-full items-center justify-center text-lg font-semibold text-slate-600 dark:text-slate-300">
             Image coming soon
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/15 via-transparent to-transparent" />
+        {project.img && <div className="absolute inset-0 bg-gradient-to-t from-slate-950/15 via-transparent to-transparent" />}
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">

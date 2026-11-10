@@ -139,7 +139,7 @@ const Navbar: React.FC = () => {
       <nav className="fixed inset-x-0 top-0 z-50 pt-3 text-slate-900 transition-colors duration-300 dark:text-white">
         <div className="container max-w-6xl px-4 md:px-6">
           <div className="relative overflow-visible">
-            <div className="overflow-hidden rounded-[20px] border border-slate-200/80 bg-white/95 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-colors duration-300 dark:border-slate-800/80 dark:bg-slate-950/94">
+            <div className="overflow-hidden rounded-[20px] border border-slate-200/80 bg-white/95 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-colors duration-300 dark:border-slate-800/80 dark:bg-slate-950/[0.94]">
               <div className="flex items-center justify-between gap-2 px-3 py-2.5 md:px-5 md:py-3.5">
               <a href="#intro" className="min-w-0 transition-opacity hover:opacity-90" onClick={closeDrawer}>
                 <div className="flex flex-col space-y-0.5">
@@ -206,7 +206,7 @@ const Navbar: React.FC = () => {
               />
               <div
                 id="mobile-nav-drawer"
-                className={`absolute left-0 right-0 top-full z-50 border-t border-slate-200/70 bg-white/98 px-3 pb-4 pt-3 shadow-[0_24px_60px_rgba(15,23,42,0.14)] transition-all duration-300 dark:border-slate-800/80 dark:bg-slate-950/98 ${
+                className={`absolute left-0 right-0 top-full z-50 border-t border-slate-200/70 bg-white/[0.98] px-3 pb-4 pt-3 shadow-[0_24px_60px_rgba(15,23,42,0.14)] transition-all duration-300 dark:border-slate-800/80 dark:bg-slate-950/[0.98] ${
                   isDrawerOpen
                     ? "translate-y-0 opacity-100"
                     : "-translate-y-3 opacity-0"

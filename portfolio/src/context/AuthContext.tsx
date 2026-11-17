@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useReducer,
   ReactNode,
+  useState,
 } from "react";
 
 interface AuthUser {
@@ -41,6 +42,7 @@ type Action =
 // Define the context type
 interface AuthContextType {
   currentUser: State["currentUser"];
+  authRestored: boolean;
   dispatch: React.Dispatch<Action>;
 }
 
@@ -49,23 +51,8 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Safely get initial user from localStorage
-const getInitialUser = (): State["currentUser"] => {
-  if (typeof window === "undefined") return null;
-  const storedUser = localStorage.getItem("currentUser");
-  try {
-    const parsed = storedUser ? JSON.parse(storedUser) : null;
-    return parsed && typeof parsed.accessToken === "string" ? parsed : null;
-  } catch {
-    localStorage.removeItem("currentUser");
-    return null;
-  }
-};
-
-// Initial state
-const initialState: State = {
-  currentUser: getInitialUser(),
-}; 
+// Keep the server and first browser render identical; restore saved auth after hydration.
+const initialState: State = { currentUser: null };
 
 // Reducer function
 const authReducer = (state: State, action: Action): State => {
@@ -86,14 +73,33 @@ const authReducer = (state: State, action: Action): State => {
 // Create context
 export const AuthContext = createContext<AuthContextType>({
   currentUser: null,
+  authRestored: false,
   dispatch: () => {},
 });
 
 // AuthProvider component
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
+  const [authRestored, setAuthRestored] = useState(false);
 
   useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem("currentUser");
+      const parsed = storedUser ? JSON.parse(storedUser) : null;
+      if (parsed && typeof parsed.accessToken === "string") {
+        dispatch({ type: "LOGIN", payload: parsed });
+      } else if (storedUser) {
+        localStorage.removeItem("currentUser");
+      }
+    } catch {
+      localStorage.removeItem("currentUser");
+    } finally {
+      setAuthRestored(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!authRestored) return;
     if (typeof window !== "undefined") {
       if (state.currentUser) {
         localStorage.setItem("currentUser", JSON.stringify(state.currentUser));
@@ -103,11 +109,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         clearAdminSessionCookie();
       }
     }
-  }, [state.currentUser]);
+  }, [authRestored, state.currentUser]);
 
   return (
     <AuthContext.Provider
-      value={{ currentUser: state.currentUser, dispatch }}
+      value={{ currentUser: state.currentUser, authRestored, dispatch }}
     >
       {children}
     </AuthContext.Provider>

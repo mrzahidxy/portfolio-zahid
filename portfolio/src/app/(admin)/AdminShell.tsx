@@ -35,7 +35,7 @@ export default function AdminShell({
 }: {
   children: React.ReactNode;
 }) {
-  const { currentUser, dispatch } = useContext(AuthContext);
+  const { currentUser, authRestored, dispatch } = useContext(AuthContext);
   const router = useRouter();
   const pathname = usePathname();
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -45,13 +45,13 @@ export default function AdminShell({
     Boolean(currentUser?.accessToken) && currentUser?.isAdmin === true;
 
   useEffect(() => {
-    if (typeof window === "undefined" || isLoginPage) return;
+    if (typeof window === "undefined" || isLoginPage || !authRestored) return;
 
     if (!hasAdminAccess) {
       dispatch({ type: "LOGOUT" });
       router.replace("/admin/login");
     }
-  }, [dispatch, hasAdminAccess, isLoginPage, router]);
+  }, [authRestored, dispatch, hasAdminAccess, isLoginPage, router]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;

@@ -15,6 +15,9 @@ import type {
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
+  summary: z.string().max(180, "Summary must be 180 characters or fewer"),
+  highlights: z.string(),
+  displayOrder: z.string().regex(/^\d+$/, "Enter a whole number zero or greater"),
   technology: z.string().min(1, "At least one technology is required"),
   githubLink: z.string().url("GitHub URL is required"),
   liveLink: z
@@ -37,6 +40,9 @@ export default function ProjectForm({ slug }: Props) {
   const [formData, setFormData] = useState<FormData>({
     title: "",
     description: "",
+    summary: "",
+    highlights: "",
+    displayOrder: "1000",
     technology: "",
     githubLink: "",
     liveLink: "",
@@ -61,6 +67,9 @@ export default function ProjectForm({ slug }: Props) {
         setFormData({
           title: res.data.data.title,
           description: res.data.data.description,
+          summary: res.data.data.summary ?? "",
+          highlights: (res.data.data.highlights ?? []).join("\n"),
+          displayOrder: String(res.data.data.displayOrder ?? 1000),
           technology: res.data.data.technology.join(", "),
           githubLink: res.data.data.githubLink,
           liveLink: res.data.data.liveLink ?? "",
@@ -183,6 +192,7 @@ export default function ProjectForm({ slug }: Props) {
             {slug ? "Edit Project" : "Add Project"}
           </h1>
         </div>
+
         <Link
           href="/admin/projects"
           className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:text-white"
@@ -220,6 +230,37 @@ export default function ProjectForm({ slug }: Props) {
             </p>
           )}
         </div>
+
+        <FormField
+          label="Card Summary (optional, 180 characters max)"
+          id="summary"
+          value={formData.summary}
+          onChange={handleChange}
+          error={errors.summary}
+        />
+
+        <div>
+          <label htmlFor="highlights" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            Engineering Highlights (one per line)
+          </label>
+          <textarea
+            id="highlights"
+            name="highlights"
+            value={formData.highlights}
+            onChange={handleChange}
+            rows={4}
+            className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 shadow-inner focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-500/30 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+          />
+          {errors.highlights && <p className="mt-1 text-sm text-red-300">{errors.highlights[0]}</p>}
+        </div>
+
+        <FormField
+          label="Display Order (lower numbers appear first)"
+          id="displayOrder"
+          value={formData.displayOrder}
+          onChange={handleChange}
+          error={errors.displayOrder}
+        />
 
         <FormField
             label="Technologies (comma-separated)"

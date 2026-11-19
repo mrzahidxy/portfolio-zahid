@@ -8,6 +8,9 @@ import Reveal from "./common/Reveal";
 
 interface Project {
   description: string;
+  summary?: string;
+  highlights?: string[];
+  displayOrder?: number;
   img: string;
   technology: Array<string>;
   githubLink: string;

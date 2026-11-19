@@ -93,7 +93,7 @@ export default function OSVisitStatsWidget() {
 
   return (
     <aside
-      className="fixed bottom-16 left-3 z-20 flex min-h-14 max-w-[calc(100vw-1.5rem)] items-center gap-3 rounded-lg border border-white/80 bg-white/[0.84] py-2 pl-4 pr-9 shadow-[0_14px_36px_rgba(26,47,87,0.15)] backdrop-blur-xl dark:border-slate-700/80 dark:bg-slate-950/[0.78] sm:left-6"
+      className="fixed bottom-16 left-3 z-20 hidden min-h-14 max-w-[calc(100vw-1.5rem)] sm:flex items-center gap-3 rounded-lg border border-white/80 bg-white/[0.84] py-2 pl-4 pr-9 shadow-[0_14px_36px_rgba(26,47,87,0.15)] backdrop-blur-xl dark:border-slate-700/80 dark:bg-slate-950/[0.78] sm:left-6"
       aria-live="polite"
       aria-label="Visit statistics"
     >

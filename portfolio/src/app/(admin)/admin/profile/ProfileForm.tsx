@@ -43,6 +43,7 @@ const mapErrors = (errors?: Record<string, string[] | undefined>): FieldErrors =
   linkedin: errors?.linkedin?.[0],
   github: errors?.github?.[0],
   website: errors?.website?.[0],
+  resumeUrl: errors?.resumeUrl?.[0],
   contactHeading: errors?.contactHeading?.[0],
   contactIntro: errors?.contactIntro?.[0],
   contactBannerHeading: errors?.contactBannerHeading?.[0],
@@ -64,6 +65,8 @@ export default function ProfileForm() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingResume, setIsUploadingResume] = useState(false);
+  const [resumeUploadMessage, setResumeUploadMessage] = useState<string | null>(null);
   const [submitResult, setSubmitResult] = useState<{
     success: boolean;
     message: string;
@@ -98,6 +101,36 @@ export default function ProfileForm() {
       ...prev,
       availableForOpportunities: event.target.checked,
     }));
+  };
+
+  const handleResumeUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setResumeUploadMessage(null);
+    if (file.type !== "application/pdf" || file.size > 4 * 1024 * 1024) {
+      setResumeUploadMessage("Choose a PDF file no larger than 4 MB.");
+      event.target.value = "";
+      return;
+    }
+
+    setIsUploadingResume(true);
+    try {
+      const uploadData = new FormData();
+      uploadData.append("resume", file);
+      const response = await api.post<{
+        success: boolean;
+        data: { url: string };
+      }>("/admin/profile", uploadData);
+
+      setFormData((previous) => ({ ...previous, resumeUrl: response.data.data.url }));
+      setResumeUploadMessage("Uploaded. Save Changes to publish this résumé link.");
+    } catch (error) {
+      setResumeUploadMessage(getApiError(error, "Résumé upload failed."));
+    } finally {
+      setIsUploadingResume(false);
+      event.target.value = "";
+    }
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -425,6 +458,43 @@ export default function ProfileForm() {
               onChange={handleChange}
               error={errors.website}
             />
+            <Field
+              label="Résumé URL (optional)"
+              name="resumeUrl"
+              value={formData.resumeUrl}
+              onChange={handleChange}
+              error={errors.resumeUrl}
+              className="md:col-span-2"
+            />
+            <div className="md:col-span-2">
+              <label
+                htmlFor="resumeUpload"
+                className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200"
+              >
+                Upload Résumé PDF
+              </label>
+              <input
+                id="resumeUpload"
+                type="file"
+                accept="application/pdf,.pdf"
+                onChange={handleResumeUpload}
+                disabled={isUploadingResume}
+                className="block w-full rounded-xl border border-slate-200 bg-white text-sm text-slate-700 file:mr-4 file:border-0 file:bg-slate-100 file:px-4 file:py-2.5 file:font-semibold dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:file:bg-slate-800 dark:file:text-slate-100"
+              />
+              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                PDF only, up to 4 MB. Upload replaces the URL above; save the profile to publish it.
+              </p>
+              {isUploadingResume && (
+                <p role="status" className="mt-2 text-sm text-sky-700 dark:text-sky-300">
+                  Uploading résumé…
+                </p>
+              )}
+              {resumeUploadMessage && (
+                <p role="status" className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                  {resumeUploadMessage}
+                </p>
+              )}
+            </div>
             <TextareaField
               label="Banner Heading"
               name="contactBannerHeading"
@@ -510,10 +580,10 @@ export default function ProfileForm() {
 
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || isUploadingResume}
             className="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
           >
-            {isSubmitting ? "Saving..." : "Save Changes"}
+            {isUploadingResume ? "Uploading résumé..." : isSubmitting ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </form>

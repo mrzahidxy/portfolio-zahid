@@ -3,7 +3,7 @@ import { listPublicExperiences } from "@/lib/profile-content";
 import { createLogger } from "@/lib/logger";
 
 export const runtime = "nodejs";
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 const log = createLogger({ context: "api/experiences" });
 
 export async function GET() {
@@ -13,7 +13,7 @@ export async function GET() {
       { success: true, data: experiences },
       {
         headers: {
-          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+          "Cache-Control": "no-store, max-age=0",
         },
       }
     );

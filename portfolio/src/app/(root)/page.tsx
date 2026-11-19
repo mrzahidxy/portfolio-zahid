@@ -1,5 +1,6 @@
 import ChatbotLauncher from "@/components/ChatbotLauncher";
 import Experience from "@/components/Experience";
+import HomeAboutSection from "@/components/HomeAboutSection";
 import HomeContactSection from "@/components/HomeContactSection";
 import HomeProfileSections from "@/components/HomeProfileSections";
 import Navbar from "@/components/Navbar/Navbar";
@@ -10,8 +11,9 @@ export default function Home() {
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-clip bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50">
       <Navbar />
-      <div className="pt-[7.5rem] sm:pt-32 md:pt-24">
+      <div>
         <HomeProfileSections />
+        <HomeAboutSection />
         <Experience />
         <Projects />
         <HomeContactSection />

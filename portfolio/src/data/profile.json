@@ -3,11 +3,9 @@
     "name": "Md. Zahid Hasan",
     "title": "Full-Stack Software Engineer",
     "location": "Dhaka, Bangladesh",
-    "bio": "I build thoughtful web products and internal tools with a focus on clear interfaces, dependable integrations, and maintainable implementation.",
+    "bio": "I connect customer-facing interfaces and internal tools to APIs, data, and integrations.",
     "about_paragraphs": [
-      "I work across customer-facing products, admin panels, and internal tools that need to be clear, dependable, and useful in day-to-day work.",
-      "My role usually covers both product thinking and implementation, from interface decisions and API integration to the practical details required to ship responsibly.",
-      "Whether I am contributing to a team or handling a focused engagement independently, I aim for straightforward communication, sensible tradeoffs, and code that stays maintainable as the product grows."
+      "I collaborate with product, design, QA, and backend teams to ship production features, and I also take on focused engagements independently."
     ],
     "contact": {
       "email": "mrzahidxy@gmail.com",
@@ -18,7 +16,7 @@
       "website": "",
       "github": "https://github.com/mrzahidxy",
       "linkedin": "https://www.linkedin.com/in/mrzahidxy",
-      "resume": ""
+      "resume": "https://res.cloudinary.com/dfeush8nq/raw/upload/v1795084320/portfolio-resumes/resume.pdf"
     }
   },
   "preferences": {
@@ -75,7 +73,7 @@
         "company": "JB Connect Ltd.",
         "period": "Jul 2025 – Present",
         "location": "Dhaka, Bangladesh",
-        "summary": "Building the frontend for a restaurant operations and ordering platform, covering order flow, admin tooling, and everyday usability.",
+        "summary": "Frontend engineer on a restaurant operations and ordering platform.",
         "highlights": [
           "Built SvelteKit dashboards for order intake, kitchen routing, and operational visibility.",
           "Improved menu, inventory, and fulfillment workflows for internal teams.",
@@ -88,7 +86,7 @@
         "company": "TechnoNext",
         "period": "Jan 2025 – Jul 2025",
         "location": "Dhaka, Bangladesh",
-        "summary": "Built seller, admin, and customer service interfaces, including live communication and workflow-heavy internal features.",
+        "summary": "Built seller, admin, and support interfaces.",
         "highlights": [
           "Implemented WebSocket-based chat and notifications alongside secure gateway integrations.",
           "Improved image upload handling and Excel-based workflows used by internal teams.",
@@ -101,7 +99,7 @@
         "company": "TechnoNext",
         "period": "Nov 2022 – Dec 2024",
         "location": "Dhaka, Bangladesh",
-        "summary": "Maintained core seller, admin, and support products with a focus on frontend structure, speed, and everyday usability.",
+        "summary": "Maintained core seller, admin, and support products.",
         "highlights": [
           "Improved performance with SSR, code splitting, and lazy loading across core interfaces.",
           "Built chat features with WebSockets and integrated secure service gateways.",
@@ -114,7 +112,7 @@
         "company": "Intelier Limited",
         "period": "Jun 2022 – Oct 2022",
         "location": "Dhaka, Bangladesh",
-        "summary": "Contributed frontend features and API integrations for production web platforms across different business domains.",
+        "summary": "Contributed to multiple client web projects.",
         "highlights": [
           "Improved responsiveness and cross-browser behavior for the Swisscontact BD site.",
           "Built frontend components and REST API integrations for the Payra Port Water Management project."
@@ -207,26 +205,26 @@
   },
   "metadata": {
     "site_url": "",
-    "last_updated": "2026-04-11",
+    "last_updated": "2026-11-19",
     "generated_from": "Next.js portfolio project"
   },
   "content": {
     "intro": {
       "availability_available": "Available for roles and select projects",
       "availability_unavailable": "Currently focused on delivery",
-      "headline": "I build dependable web products for teams, products, and independent clients.",
+      "headline": "I build web products with React, Next.js, and Node.js.",
       "primary_cta_label": "See Selected Work",
       "secondary_cta_label": "Get In Touch",
       "highlights": [
         "4 years in production",
-        "Front end to backend",
-        "Product and delivery focused"
+        "React / Next.js",
+        "Node.js / Express"
       ]
     },
     "about": {
       "eyebrow_label": "About",
-      "heading": "A Bit More Context",
-      "intro": "A clearer view of the work I take on and how I usually approach it.",
+      "heading": "How I Work",
+      "intro": "Clear communication, practical tradeoffs, and maintainable delivery guide my work.",
       "based_in_label": "Based In",
       "skills_eyebrow_label": "Skills & Tools",
       "skills_heading": "Core Technologies",
@@ -234,8 +232,8 @@
     },
     "contact": {
       "eyebrow_label": "Contact",
-      "heading": "Start a conversation.",
-      "intro": "If you have a role, project, or collaboration in mind, send a short note.",
+      "heading": "Get in touch",
+      "intro": "Use the form or the links below to reach me.",
       "banner_eyebrow_label": "What I Can Help With",
       "banner_heading": "Open to product roles, freelance work, and focused builds that need thoughtful execution.",
       "banner_intro": "A short note on the role, product, timeline, or scope is enough to get started.",
@@ -249,8 +247,8 @@
       "details_intro": "Email, phone, location, and profile links.",
       "profiles_label": "Profiles",
       "form_eyebrow_label": "Project Brief",
-      "form_heading": "Send a short brief",
-      "form_intro": "Share the context and what you need help with so I can reply with the right next step.",
+      "form_heading": "Send a message",
+      "form_intro": "A few relevant details help me respond.",
       "submit_button_label": "Send Brief",
       "success_message": "I've received your message and will get back to you soon."
     },

@@ -10,6 +10,7 @@ export interface ProfileLinks {
   website: string;
   github: string;
   linkedin: string;
+  resume?: string;
 }
 
 export interface ProfileIntroContent {

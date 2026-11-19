@@ -23,3 +23,19 @@ export const uploadToCloudinary = async (
     return { success: false, error: error as UploadApiErrorResponse };
   }
 };
+
+export const uploadResumeToCloudinary = async (fileUri: string) => {
+  try {
+    const result = await cloudinary.uploader.upload(fileUri, {
+      invalidate: true,
+      resource_type: "raw",
+      folder: "portfolio-resumes",
+      public_id: "resume.pdf",
+      overwrite: true,
+    });
+
+    return { success: true as const, url: result.secure_url };
+  } catch (error) {
+    return { success: false as const, error };
+  }
+};

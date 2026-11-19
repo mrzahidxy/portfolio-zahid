@@ -5,6 +5,9 @@ export interface IProject extends Document {
   title: string;
   slug?: string;
   description: string;
+  summary?: string;
+  highlights: string[];
+  displayOrder: number;
   technology: string[];
   githubLink: string;
   liveLink?: string;
@@ -19,6 +22,9 @@ const ProjectSchema: Schema = new mongoose.Schema({
   title: { type: String, required: true, trim: true },
   slug: { type: String, trim: true, index: true },
   description: { type: String, required: true },
+  summary: { type: String, trim: true, maxlength: 180 },
+  highlights: { type: [String], default: [] },
+  displayOrder: { type: Number, default: 1000, min: 0 },
   technology: { type: [String], required: true },
   githubLink: { type: String, required: true },
   liveLink: { type: String },

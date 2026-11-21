@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { isVisitCounterEnabled } from "@/lib/visit-counter";
 
 const DEFAULT_SOCKET_URL =
   process.env.NODE_ENV === "development" ? "ws://localhost:8010" : "";
@@ -9,7 +10,8 @@ const DEFAULT_API_URL =
 const SOCKET_URL =
   process.env.NEXT_PUBLIC_WEBSOCKET_URL?.trim() || DEFAULT_SOCKET_URL;
 const API_URL = process.env.NEXT_PUBLIC_VISIT_API_URL?.trim() || DEFAULT_API_URL;
-const shouldConnectVisitCounter = Boolean(SOCKET_URL);
+const shouldConnectVisitCounter =
+  isVisitCounterEnabled && Boolean(SOCKET_URL);
 
 export default function OSVisitStatsWidget() {
   const [visitCount, setVisitCount] = useState(0);

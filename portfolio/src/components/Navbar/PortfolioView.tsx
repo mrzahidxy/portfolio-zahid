@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import { isVisitCounterEnabled } from "@/lib/visit-counter";
 
 const SOCKET_URL =
   process.env.NEXT_PUBLIC_WEBSOCKET_URL?.trim() || "";
 const API_URL =
   process.env.NEXT_PUBLIC_VISIT_API_URL?.trim() || "";
-const shouldConnectVisitCounter = Boolean(SOCKET_URL && API_URL);
+const shouldConnectVisitCounter =
+  isVisitCounterEnabled && Boolean(SOCKET_URL && API_URL);
 
 function PortfolioView() {
   const [visitCount, setVisitCount] = useState<number>(0);

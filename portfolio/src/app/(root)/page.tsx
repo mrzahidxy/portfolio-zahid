@@ -3,6 +3,7 @@ import Experience from "@/components/Experience";
 import HomeAboutSection from "@/components/HomeAboutSection";
 import HomeContactSection from "@/components/HomeContactSection";
 import HomeProfileSections from "@/components/HomeProfileSections";
+import MediumWritingSection from "@/components/MediumWritingSection";
 import Navbar from "@/components/Navbar/Navbar";
 import PortfolioFooter from "@/components/PortfolioFooter";
 import Projects from "@/components/Projects";
@@ -16,6 +17,7 @@ export default function Home() {
         <HomeAboutSection />
         <Experience />
         <Projects />
+        <MediumWritingSection />
         <HomeContactSection />
       </div>
       <PortfolioFooter />

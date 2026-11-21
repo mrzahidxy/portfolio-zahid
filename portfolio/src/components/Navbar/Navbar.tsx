@@ -11,6 +11,7 @@ import PortfolioView from "./PortfolioView";
 const NAV_ITEMS = [
   { name: "Projects", url: "#projects" },
   { name: "Experience", url: "#experience" },
+  { name: "Writing", url: "#writing" },
   { name: "Contact", url: "#contact" },
 ];
 

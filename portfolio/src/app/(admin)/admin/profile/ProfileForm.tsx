@@ -2,6 +2,8 @@
 
 import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faFloppyDisk, faRotateRight } from "@fortawesome/free-solid-svg-icons";
 import DefaultLoader from "@/components/common/DefaultLoader";
 import { useAxiosWithAuth } from "@/helper/request-method";
 import {
@@ -191,14 +193,17 @@ export default function ProfileForm() {
           <button
             type="button"
             onClick={loadProfile}
-            className="rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500"
+            aria-label="Retry loading profile"
+            title="Retry loading profile"
+            className="admin-icon-action inline-flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white transition hover:bg-blue-500"
           >
-            Retry
+            <FontAwesomeIcon icon={faRotateRight} aria-hidden="true" className="h-4 w-4" />
           </button>
           <Link
             href="/admin"
             className="rounded-full border border-red-500/40 px-4 py-2 text-sm font-semibold transition hover:border-red-400"
           >
+            <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" className="mr-2 h-3.5 w-3.5" />
             Back to dashboard
           </Link>
         </div>
@@ -213,9 +218,9 @@ export default function ProfileForm() {
           <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
             Profile
           </p>
-          <h1 className="text-xl font-semibold text-slate-900 dark:text-white">
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
             Manage Profile Content
-          </h1>
+          </h2>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Update the high-frequency details used across the homepage and contact
             sections.
@@ -225,6 +230,7 @@ export default function ProfileForm() {
           href="/admin"
           className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:text-white"
         >
+          <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" className="mr-2 h-3.5 w-3.5" />
           Back to dashboard
         </Link>
       </div>
@@ -571,6 +577,7 @@ export default function ProfileForm() {
                   ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/30 dark:text-emerald-300"
                   : "border-red-200 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/30 dark:text-red-300"
                 }`}
+              role={submitResult.success ? "status" : "alert"}
             >
               {submitResult.message}
             </div>
@@ -581,8 +588,9 @@ export default function ProfileForm() {
           <button
             type="submit"
             disabled={isSubmitting || isUploadingResume}
-            className="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
           >
+            <FontAwesomeIcon icon={faFloppyDisk} aria-hidden="true" className="h-4 w-4" />
             {isUploadingResume ? "Uploading résumé..." : isSubmitting ? "Saving..." : "Save Changes"}
           </button>
         </div>

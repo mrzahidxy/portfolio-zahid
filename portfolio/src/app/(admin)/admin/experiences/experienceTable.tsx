@@ -1,4 +1,6 @@
 import React from "react";
+import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import AdminIconButton from "../../AdminIconButton";
 
 interface ExperienceRow {
   id?: string;
@@ -66,23 +68,20 @@ export default function ExperienceTable({
                 {experience.summary}
               </td>
               <td className="px-4 py-3">
-                <div className="flex min-w-[9rem] flex-col items-stretch gap-2">
-                  <button
-                    type="button"
+                <div className="flex items-center gap-1.5">
+                  <AdminIconButton
+                    label={`Edit ${experience.role} at ${experience.company}`}
+                    icon={faPenToSquare}
                     onClick={() => experience.id && onUpdate(experience.id)}
                     disabled={Boolean(busyAction) || !experience.id}
-                    className="rounded-md border border-slate-300 px-3 py-1.5 text-center text-xs font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:bg-slate-800"
-                  >
-                    Update
-                  </button>
-                  <button
-                    type="button"
+                  />
+                  <AdminIconButton
+                    label={`Delete ${experience.role} at ${experience.company}`}
+                    icon={faTrashCan}
+                    tone="danger"
                     onClick={() => experience.id && onDelete(experience.id)}
                     disabled={Boolean(busyAction) || !experience.id}
-                    className="rounded-md border border-red-500/50 px-3 py-1.5 text-center text-xs font-medium text-red-600 transition hover:border-red-400 hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:text-red-200"
-                  >
-                    {busyAction === `delete-${experience.id}` ? "Deleting..." : "Delete"}
-                  </button>
+                  />
                 </div>
               </td>
             </tr>

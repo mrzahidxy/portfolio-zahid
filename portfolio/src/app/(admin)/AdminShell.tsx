@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   faArrowRightFromBracket,
+  faArrowUpRightFromSquare,
   faBars,
   faBriefcase,
   faDiagramProject,
@@ -40,6 +41,8 @@ export default function AdminShell({
   const pathname = usePathname();
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState(false);
   const isLoginPage = pathname === "/admin/login";
   const hasAdminAccess =
     Boolean(currentUser?.accessToken) && currentUser?.isAdmin === true;
@@ -73,11 +76,19 @@ export default function AdminShell({
   }, [pathname]);
 
   const handleLogout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    setLogoutError(false);
+
     try {
-      await fetch("/api/auth/logout", { method: "POST" });
-    } finally {
-    dispatch({ type: "LOGOUT" });
-    router.replace("/admin/login");
+      const response = await fetch("/api/auth/logout", { method: "POST" });
+      if (!response.ok) throw new Error("The logout request failed.");
+
+      dispatch({ type: "LOGOUT" });
+      router.replace("/admin/login");
+    } catch {
+      setLogoutError(true);
+      setIsLoggingOut(false);
     }
   };
 
@@ -99,41 +110,42 @@ export default function AdminShell({
 
   return (
     <div
-      className={`font-sans flex min-h-screen ${isDarkMode ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-900"}`}
+      className={`flex min-h-screen font-sans ${isDarkMode ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-900"}`}
     >
       <aside
-        className={`hidden w-64 flex-col border-r px-5 py-6 shadow-xl backdrop-blur lg:flex ${
-          isDarkMode ? "border-slate-800 bg-slate-900/80" : "border-slate-200 bg-white/80"
+        className={`sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r px-5 py-6 lg:flex ${
+          isDarkMode ? "border-slate-800 bg-slate-900" : "border-slate-200 bg-white"
         }`}
       >
         <div className="mb-8 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500 text-lg font-bold text-slate-950">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white">
             ZH
           </div>
           <div>
-            <p className="text-sm text-slate-400">Admin Console</p>
-            <p className="text-lg font-semibold">Zahid Hasan</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Portfolio</p>
+            <p className="text-base font-semibold">Admin</p>
           </div>
         </div>
 
-        <nav className="space-y-1">
+        <nav className="space-y-1" aria-label="Admin navigation">
           {navLinks.map((link) => {
             const active = isActiveAdminLink(pathname, link.href);
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
                   active
                     ? isDarkMode
-                      ? "bg-slate-800 text-white shadow-inner"
-                      : "bg-slate-100 text-slate-900 shadow-inner"
+                      ? "bg-blue-500/15 text-blue-300"
+                      : "bg-blue-50 text-blue-800"
                     : isDarkMode
                       ? "text-slate-300 hover:bg-slate-800 hover:text-white"
                       : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                 }`}
+                aria-current={active ? "page" : undefined}
               >
-                <FontAwesomeIcon icon={link.icon} className="h-4 w-4" />
+                <FontAwesomeIcon icon={link.icon} aria-hidden="true" className="h-4 w-4" />
                 {link.label}
               </Link>
             );
@@ -141,18 +153,26 @@ export default function AdminShell({
         </nav>
 
         <div className="mt-auto">
+          {logoutError && (
+            <p role="alert" className="mb-2 text-xs text-red-700 dark:text-red-300">
+              Could not sign out. Please try again.
+            </p>
+          )}
           <button
             type="button"
             onClick={handleLogout}
-            className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-sm font-medium transition ${
+            disabled={isLoggingOut}
+            aria-busy={isLoggingOut}
+            className={`flex w-full items-center justify-between rounded-lg border px-3 py-2.5 text-sm font-medium transition ${
               isDarkMode
                 ? "border-slate-800 text-slate-200 hover:border-slate-600 hover:bg-slate-800"
                 : "border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-100"
             }`}
           >
-            <span>Logout</span>
+            <span>{isLoggingOut ? "Logging out…" : "Logout"}</span>
             <FontAwesomeIcon
               icon={faArrowRightFromBracket}
+              aria-hidden="true"
               className="h-4 w-4"
             />
           </button>
@@ -161,21 +181,14 @@ export default function AdminShell({
 
       <div className="flex-1">
         <header
-          className={`border-b px-4 py-4 shadow-sm backdrop-blur ${
-            isDarkMode ? "border-slate-800 bg-slate-900/70" : "border-slate-200 bg-white/80"
+          className={`sticky top-0 z-30 border-b px-4 py-4 ${
+            isDarkMode ? "border-slate-800 bg-slate-950" : "border-slate-200 bg-white"
           }`}
         >
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p
-                className={`text-xs uppercase tracking-[0.3em] ${
-                  isDarkMode ? "text-slate-500" : "text-slate-500"
-                }`}
-              >
-                Admin
-              </p>
               <h1
-                className={`text-xl font-semibold ${
+                className={`text-lg font-semibold ${
                   isDarkMode ? "text-white" : "text-slate-900"
                 }`}
               >
@@ -183,6 +196,21 @@ export default function AdminShell({
               </h1>
             </div>
             <div className="flex items-center gap-3">
+              <Link
+                href="/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="View public page"
+                title="View public page"
+                className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg border px-3 text-sm font-medium transition ${
+                  isDarkMode
+                    ? "border-slate-700 text-slate-200 hover:border-slate-500 hover:bg-slate-800"
+                    : "border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-100"
+                }`}
+              >
+                <FontAwesomeIcon icon={faArrowUpRightFromSquare} aria-hidden="true" className="h-4 w-4" />
+                <span className="hidden sm:inline">View public page</span>
+              </Link>
               <button
                 type="button"
                 onClick={() => setMobileNavOpen((prev) => !prev)}
@@ -207,23 +235,14 @@ export default function AdminShell({
                     ? "border-slate-700 bg-slate-800 text-slate-100 hover:border-slate-500"
                     : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
                 }`}
-                aria-label="Toggle theme"
+                aria-label={`Switch to ${isDarkMode ? "light" : "dark"} theme`}
               >
                 <FontAwesomeIcon
                   icon={isDarkMode ? faSun : faMoon}
+                  aria-hidden="true"
                   className="h-4 w-4"
                 />
               </button>
-              <div
-                className={`hidden items-center gap-2 rounded-full border px-3 py-1.5 text-sm shadow-inner sm:flex ${
-                  isDarkMode
-                    ? "border-slate-800 bg-slate-900 text-slate-200"
-                    : "border-slate-200 bg-white text-slate-700"
-                }`}
-              >
-                <span className="inline-flex h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_0_6px_rgba(52,211,153,0.25)]" />
-                <span>Active</span>
-              </div>
             </div>
           </div>
 
@@ -235,17 +254,18 @@ export default function AdminShell({
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
                       active
                         ? isDarkMode
-                          ? "bg-slate-800 text-white shadow-inner"
-                          : "bg-slate-100 text-slate-900 shadow-inner"
+                          ? "bg-blue-500/15 text-blue-300"
+                          : "bg-blue-50 text-blue-800"
                         : isDarkMode
                           ? "text-slate-300 hover:bg-slate-800 hover:text-white"
                           : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                     }`}
+                    aria-current={active ? "page" : undefined}
                   >
-                    <FontAwesomeIcon icon={link.icon} className="h-4 w-4" />
+                    <FontAwesomeIcon icon={link.icon} aria-hidden="true" className="h-4 w-4" />
                     {link.label}
                   </Link>
                 );
@@ -253,24 +273,32 @@ export default function AdminShell({
               <button
                 type="button"
                 onClick={handleLogout}
-                className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                disabled={isLoggingOut}
+                aria-busy={isLoggingOut}
+                className={`flex w-full items-center justify-between rounded-lg border px-3 py-2.5 text-sm font-medium transition disabled:cursor-wait disabled:opacity-60 ${
                   isDarkMode
                     ? "border-slate-800 text-slate-200 hover:border-slate-600 hover:bg-slate-800"
                     : "border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-100"
                 }`}
               >
-                <span>Logout</span>
+                <span>{isLoggingOut ? "Logging out…" : "Logout"}</span>
                 <FontAwesomeIcon
                   icon={faArrowRightFromBracket}
+                  aria-hidden="true"
                   className="h-4 w-4"
                 />
               </button>
+              {logoutError && (
+                <p role="alert" className="pt-2 text-xs text-red-700 dark:text-red-300">
+                  Could not sign out. Please try again.
+                </p>
+              )}
             </nav>
           )}
         </header>
 
-        <main className="px-4 py-6 lg:px-8 lg:py-8">
-          <div className="mx-auto max-w-6xl space-y-6">{children}</div>
+        <main className="admin-content px-4 py-6 sm:px-6 lg:px-10 lg:py-9">
+          <div className="mx-auto max-w-7xl space-y-6">{children}</div>
         </main>
       </div>
     </div>

@@ -181,3 +181,56 @@ html.dark .smooth-scrollbar::-webkit-scrollbar-thumb {
     animation: none;
   }
 }
+
+.admin-content {
+  min-height: calc(100vh - 4rem);
+}
+
+.admin-content table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.admin-content table thead th {
+  padding-top: 0.85rem;
+  padding-bottom: 0.85rem;
+  color: #64748b;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.admin-content table tbody td {
+  vertical-align: middle;
+}
+
+.admin-content table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.admin-content .admin-icon-action {
+  flex: 0 0 auto;
+}
+
+.admin-content input:not([type="checkbox"]):not([type="file"]),
+.admin-content select,
+.admin-content textarea {
+  border-radius: 0.625rem;
+  box-shadow: none;
+}
+
+.admin-content input:focus-visible,
+.admin-content select:focus-visible,
+.admin-content textarea:focus-visible,
+.admin-content button:focus-visible,
+.admin-content a:focus-visible {
+  outline: 2px solid rgb(37 99 235 / 55%);
+  outline-offset: 2px;
+}
+
+html.dark .admin-content table thead th {
+  color: #94a3b8;
+}

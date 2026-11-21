@@ -4,6 +4,8 @@ import React, { useState, FormEvent, ChangeEvent, useEffect } from "react";
 import { z } from "zod";
 import Link from "next/link";
 import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 import { useAxiosWithAuth } from "@/helper/request-method";
 import { useRouter } from "next/navigation";
 import type {
@@ -50,12 +52,24 @@ export default function ProjectForm({ slug }: Props) {
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitResult, setSubmitResult] = useState<{
     success: boolean;
     message: string;
   } | null>(null);
+
+  useEffect(() => {
+    if (!imageFile) {
+      setImagePreviewUrl(null);
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(imageFile);
+    setImagePreviewUrl(previewUrl);
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [imageFile]);
 
   // Fetch project details if slug is provided
   useEffect(() => {
@@ -188,15 +202,16 @@ export default function ProjectForm({ slug }: Props) {
           <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
             Project
           </p>
-          <h1 className="text-xl font-semibold text-slate-900 dark:text-white">
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
             {slug ? "Edit Project" : "Add Project"}
-          </h1>
+          </h2>
         </div>
 
         <Link
           href="/admin/projects"
           className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:text-white"
         >
+          <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" className="mr-2 h-3.5 w-3.5" />
           Back to list
         </Link>
       </div>
@@ -290,7 +305,7 @@ export default function ProjectForm({ slug }: Props) {
         <div>
           <label
             htmlFor="img"
-            className="block text-sm font-medium text-slate-300"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
           >
             Project Image
           </label>
@@ -303,10 +318,10 @@ export default function ProjectForm({ slug }: Props) {
             className="mt-2 block w-full text-sm text-slate-700 file:mr-4 file:rounded-full file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-700 hover:file:bg-slate-200 dark:text-slate-300 dark:file:bg-slate-800 dark:file:text-slate-200 dark:hover:file:bg-slate-700"
           />
 
-          {(imagePreview || imageFile) && (
+          {(imagePreviewUrl || (!imageFile && imagePreview)) && (
             <div className="mt-4">
               <Image
-                src={imageFile ? URL.createObjectURL(imageFile) : imagePreview!}
+                src={imagePreviewUrl ?? imagePreview!}
                 alt="Selected project preview"
                 width={800}
                 height={400}
@@ -320,8 +335,9 @@ export default function ProjectForm({ slug }: Props) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-lg bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
         >
+          <FontAwesomeIcon icon={faFloppyDisk} aria-hidden="true" className="h-4 w-4" />
           {isSubmitting ? "Submitting..." : slug ? "Update Project" : "Add Project"}
         </button>
       </form>
@@ -330,9 +346,10 @@ export default function ProjectForm({ slug }: Props) {
         <div
           className={`mt-4 rounded-lg p-4 text-sm ${
             submitResult.success
-              ? "border border-emerald-500/40 bg-emerald-500/10 text-emerald-100"
-              : "border border-red-500/40 bg-red-500/10 text-red-200"
+              ? "border border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-100"
+              : "border border-red-500/40 bg-red-500/10 text-red-800 dark:text-red-200"
           }`}
+          role={submitResult.success ? "status" : "alert"}
         >
           <p className="font-semibold">
             {submitResult.success ? "Success" : "Error"}

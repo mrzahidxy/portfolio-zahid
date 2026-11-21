@@ -2,6 +2,8 @@
 
 import React, { ChangeEvent, FormEvent, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faFloppyDisk, faRotateRight } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/navigation";
 import DefaultLoader from "@/components/common/DefaultLoader";
 import { useAxiosWithAuth } from "@/helper/request-method";
@@ -142,14 +144,17 @@ export default function ExperienceForm({ id }: { id?: string }) {
           <button
             type="button"
             onClick={loadExperience}
-            className="rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-sky-400"
+            aria-label="Retry loading experience"
+            title="Retry loading experience"
+            className="admin-icon-action inline-flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white transition hover:bg-blue-500"
           >
-            Retry
+            <FontAwesomeIcon icon={faRotateRight} aria-hidden="true" className="h-4 w-4" />
           </button>
           <Link
             href="/admin/experiences"
             className="rounded-full border border-red-500/40 px-4 py-2 text-sm font-semibold transition hover:border-red-400"
           >
+          <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" className="mr-2 h-3.5 w-3.5" />
             Back to list
           </Link>
         </div>
@@ -164,14 +169,15 @@ export default function ExperienceForm({ id }: { id?: string }) {
           <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
             Experience
           </p>
-          <h1 className="text-xl font-semibold text-slate-900 dark:text-white">
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
             {id ? "Edit Experience" : "Add Experience"}
-          </h1>
+          </h2>
         </div>
         <Link
           href="/admin/experiences"
           className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:text-white"
         >
+          <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" className="mr-2 h-3.5 w-3.5" />
           Back to list
         </Link>
       </div>
@@ -253,6 +259,7 @@ export default function ExperienceForm({ id }: { id?: string }) {
                   ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/30 dark:text-emerald-300"
                   : "border-red-200 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/30 dark:text-red-300"
               }`}
+              role={submitResult.success ? "status" : "alert"}
             >
               {submitResult.message}
             </div>
@@ -262,8 +269,9 @@ export default function ExperienceForm({ id }: { id?: string }) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
           >
+            <FontAwesomeIcon icon={faFloppyDisk} aria-hidden="true" className="h-4 w-4" />
             {isSubmitting ? "Saving..." : id ? "Update Experience" : "Add Experience"}
           </button>
         </div>

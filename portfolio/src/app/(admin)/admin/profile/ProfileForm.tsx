@@ -2,6 +2,8 @@
 
 import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faFloppyDisk, faRotateRight } from "@fortawesome/free-solid-svg-icons";
 import DefaultLoader from "@/components/common/DefaultLoader";
 import { useAxiosWithAuth } from "@/helper/request-method";
 import {
@@ -43,6 +45,7 @@ const mapErrors = (errors?: Record<string, string[] | undefined>): FieldErrors =
   linkedin: errors?.linkedin?.[0],
   github: errors?.github?.[0],
   website: errors?.website?.[0],
+  resumeUrl: errors?.resumeUrl?.[0],
   contactHeading: errors?.contactHeading?.[0],
   contactIntro: errors?.contactIntro?.[0],
   contactBannerHeading: errors?.contactBannerHeading?.[0],
@@ -64,6 +67,8 @@ export default function ProfileForm() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingResume, setIsUploadingResume] = useState(false);
+  const [resumeUploadMessage, setResumeUploadMessage] = useState<string | null>(null);
   const [submitResult, setSubmitResult] = useState<{
     success: boolean;
     message: string;
@@ -98,6 +103,36 @@ export default function ProfileForm() {
       ...prev,
       availableForOpportunities: event.target.checked,
     }));
+  };
+
+  const handleResumeUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setResumeUploadMessage(null);
+    if (file.type !== "application/pdf" || file.size > 4 * 1024 * 1024) {
+      setResumeUploadMessage("Choose a PDF file no larger than 4 MB.");
+      event.target.value = "";
+      return;
+    }
+
+    setIsUploadingResume(true);
+    try {
+      const uploadData = new FormData();
+      uploadData.append("resume", file);
+      const response = await api.post<{
+        success: boolean;
+        data: { url: string };
+      }>("/admin/profile", uploadData);
+
+      setFormData((previous) => ({ ...previous, resumeUrl: response.data.data.url }));
+      setResumeUploadMessage("Uploaded. Save Changes to publish this résumé link.");
+    } catch (error) {
+      setResumeUploadMessage(getApiError(error, "Résumé upload failed."));
+    } finally {
+      setIsUploadingResume(false);
+      event.target.value = "";
+    }
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -158,14 +193,17 @@ export default function ProfileForm() {
           <button
             type="button"
             onClick={loadProfile}
-            className="rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500"
+            aria-label="Retry loading profile"
+            title="Retry loading profile"
+            className="admin-icon-action inline-flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white transition hover:bg-blue-500"
           >
-            Retry
+            <FontAwesomeIcon icon={faRotateRight} aria-hidden="true" className="h-4 w-4" />
           </button>
           <Link
             href="/admin"
             className="rounded-full border border-red-500/40 px-4 py-2 text-sm font-semibold transition hover:border-red-400"
           >
+            <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" className="mr-2 h-3.5 w-3.5" />
             Back to dashboard
           </Link>
         </div>
@@ -180,9 +218,9 @@ export default function ProfileForm() {
           <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
             Profile
           </p>
-          <h1 className="text-xl font-semibold text-slate-900 dark:text-white">
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
             Manage Profile Content
-          </h1>
+          </h2>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Update the high-frequency details used across the homepage and contact
             sections.
@@ -192,6 +230,7 @@ export default function ProfileForm() {
           href="/admin"
           className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:text-white"
         >
+          <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" className="mr-2 h-3.5 w-3.5" />
           Back to dashboard
         </Link>
       </div>
@@ -425,6 +464,43 @@ export default function ProfileForm() {
               onChange={handleChange}
               error={errors.website}
             />
+            <Field
+              label="Résumé URL (optional)"
+              name="resumeUrl"
+              value={formData.resumeUrl}
+              onChange={handleChange}
+              error={errors.resumeUrl}
+              className="md:col-span-2"
+            />
+            <div className="md:col-span-2">
+              <label
+                htmlFor="resumeUpload"
+                className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200"
+              >
+                Upload Résumé PDF
+              </label>
+              <input
+                id="resumeUpload"
+                type="file"
+                accept="application/pdf,.pdf"
+                onChange={handleResumeUpload}
+                disabled={isUploadingResume}
+                className="block w-full rounded-xl border border-slate-200 bg-white text-sm text-slate-700 file:mr-4 file:border-0 file:bg-slate-100 file:px-4 file:py-2.5 file:font-semibold dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:file:bg-slate-800 dark:file:text-slate-100"
+              />
+              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                PDF only, up to 4 MB. Upload replaces the URL above; save the profile to publish it.
+              </p>
+              {isUploadingResume && (
+                <p role="status" className="mt-2 text-sm text-sky-700 dark:text-sky-300">
+                  Uploading résumé…
+                </p>
+              )}
+              {resumeUploadMessage && (
+                <p role="status" className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                  {resumeUploadMessage}
+                </p>
+              )}
+            </div>
             <TextareaField
               label="Banner Heading"
               name="contactBannerHeading"
@@ -501,6 +577,7 @@ export default function ProfileForm() {
                   ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/30 dark:text-emerald-300"
                   : "border-red-200 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/30 dark:text-red-300"
                 }`}
+              role={submitResult.success ? "status" : "alert"}
             >
               {submitResult.message}
             </div>
@@ -510,10 +587,11 @@ export default function ProfileForm() {
 
           <button
             type="submit"
-            disabled={isSubmitting}
-            className="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
+            disabled={isSubmitting || isUploadingResume}
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isSubmitting ? "Saving..." : "Save Changes"}
+            <FontAwesomeIcon icon={faFloppyDisk} aria-hidden="true" className="h-4 w-4" />
+            {isUploadingResume ? "Uploading résumé..." : isSubmitting ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </form>

@@ -4,6 +4,8 @@ import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { AuthContext } from "@/context/AuthContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRightToBracket } from "@fortawesome/free-solid-svg-icons";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -73,6 +75,7 @@ export default function LoginForm() {
               id="email"
               type="email"
               placeholder="you@example.com"
+              autoComplete="username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -89,6 +92,7 @@ export default function LoginForm() {
             <input
               id="password"
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -105,8 +109,9 @@ export default function LoginForm() {
           )}
           <button
             type="submit"
-            className="w-full rounded-lg bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-sky-500/30 transition hover:-translate-y-[1px] hover:bg-sky-400"
+            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-500"
           >
+            <FontAwesomeIcon icon={faArrowRightToBracket} aria-hidden="true" className="h-4 w-4" />
             Sign In
           </button>
         </form>

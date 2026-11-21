@@ -3,6 +3,22 @@ import { z } from "zod";
 const requiredText = (label: string) =>
   z.string().trim().min(1, `${label} is required`);
 
+const optionalHttpUrl = (label: string) =>
+  z
+    .string()
+    .trim()
+    .refine((value) => {
+      if (value === "") return true;
+      try {
+        const protocol = new URL(value).protocol;
+        return protocol === "http:" || protocol === "https:";
+      } catch {
+        return false;
+      }
+    }, `${label} must be an HTTP or HTTPS URL`)
+    .optional()
+    .default("");
+
 export const adminProfileSchema = z.object({
   name: requiredText("Name"),
   title: requiredText("Job title"),
@@ -33,6 +49,7 @@ export const adminProfileSchema = z.object({
     .refine((value) => value === "" || z.string().url().safeParse(value).success, {
       message: "Enter a valid website URL or leave it blank",
     }),
+  resumeUrl: optionalHttpUrl("Résumé URL"),
   contactHeading: requiredText("Contact heading"),
   contactIntro: requiredText("Contact intro"),
   contactBannerHeading: requiredText("Contact banner heading"),
@@ -68,6 +85,7 @@ export const defaultAdminProfilePayload: AdminProfilePayload = {
   linkedin: "",
   github: "",
   website: "",
+  resumeUrl: "",
   contactHeading: "",
   contactIntro: "",
   contactBannerHeading: "",
@@ -107,6 +125,7 @@ export const defaultAdminProfileFormValues: AdminProfileFormValues = {
   linkedin: "",
   github: "",
   website: "",
+  resumeUrl: "",
   contactHeading: "",
   contactIntro: "",
   contactBannerHeading: "",

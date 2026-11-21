@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,17 +9,17 @@ import { DarkModeToggle } from "./DarkModeToggle.component";
 import PortfolioView from "./PortfolioView";
 
 const NAV_ITEMS = [
-  { name: "Intro", url: "#intro" },
-  { name: "About", url: "#about" },
-  { name: "Experience", url: "#experience" },
   { name: "Projects", url: "#projects" },
+  { name: "Experience", url: "#experience" },
+  { name: "Writing", url: "#writing" },
+  { name: "Contact", url: "#contact" },
 ];
 
 const Navbar: React.FC = () => {
   const { profile } = usePublicProfile();
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [mounted, setMounted] = useState(false);
-  const [activeSection, setActiveSection] = useState<string>(NAV_ITEMS[0].url);
+  const [activeSection, setActiveSection] = useState<string>("");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const name = profile.personal_details.name;
   const title = profile.personal_details.title;
@@ -44,10 +43,10 @@ const Navbar: React.FC = () => {
     if (typeof window === "undefined") return;
 
     const updateFromHash = () => {
-      const matchedHash =
-        NAV_ITEMS.find((item) => item.url === window.location.hash)?.url ??
-        NAV_ITEMS[0].url;
-      setActiveSection(matchedHash);
+      const matchedHash = NAV_ITEMS.find(
+        (item) => item.url === window.location.hash
+      )?.url;
+      setActiveSection(matchedHash ?? "");
     };
 
     const sections = NAV_ITEMS.map((item) =>
@@ -139,9 +138,9 @@ const Navbar: React.FC = () => {
       <nav className="fixed inset-x-0 top-0 z-50 pt-3 text-slate-900 transition-colors duration-300 dark:text-white">
         <div className="container max-w-6xl px-4 md:px-6">
           <div className="relative overflow-visible">
-            <div className="overflow-hidden rounded-[20px] border border-slate-200/80 bg-white/95 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-colors duration-300 dark:border-slate-800/80 dark:bg-slate-950/[0.94]">
-              <div className="flex items-center justify-between gap-2 px-3 py-2.5 md:px-5 md:py-3.5">
-              <a href="#intro" className="min-w-0 transition-opacity hover:opacity-90" onClick={closeDrawer}>
+            <div className="overflow-hidden rounded-[20px] border border-slate-200/80 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-colors duration-300 dark:border-slate-800/80 dark:bg-slate-950">
+              <div className="flex items-center justify-between gap-3 px-4 py-2.5 sm:gap-4 sm:px-5 md:py-3">
+              <a href="#intro" className="min-w-0 shrink transition-opacity hover:opacity-90" onClick={closeDrawer}>
                 <div className="flex flex-col space-y-0.5">
                   <span className="truncate text-[14px] font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-[15px]">
                     {name}
@@ -152,7 +151,7 @@ const Navbar: React.FC = () => {
                 </div>
               </a>
 
-              <ul className="hidden items-center gap-1 lg:flex">
+              <ul className="hidden shrink-0 items-center gap-1 lg:flex">
                 {NAV_ITEMS.map((item) => (
                   <NavbarLink
                     key={item.url}
@@ -164,19 +163,12 @@ const Navbar: React.FC = () => {
                 ))}
               </ul>
 
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/os"
-                  className="hidden h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-slate-200/80 bg-white/80 px-4 text-sm font-semibold text-slate-800 transition duration-200 hover:border-sky-200 hover:bg-sky-50 hover:text-sky-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-200/70 sm:inline-flex dark:border-slate-700/80 dark:bg-slate-900/80 dark:text-slate-100 dark:hover:border-sky-700 dark:hover:bg-sky-950/40 dark:hover:text-sky-200 dark:focus-visible:ring-sky-900"
-                >
-                  OS View
-                </Link>
-                <a
-                  href="#contact"
-                  className="hidden h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-slate-950 px-4 text-sm font-semibold text-white transition duration-200 hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-200/70 sm:inline-flex sm:min-w-[9rem] dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 dark:focus-visible:ring-sky-900"
-                >
-                  Work With Me
-                </a>
+              <div className="flex shrink-0 items-center gap-2">
+                {profile.personal_details.links.resume && (
+                  <a href={profile.personal_details.links.resume} target="_blank" rel="noreferrer" className="hidden h-9 items-center rounded-full bg-slate-950 px-3 text-xs font-semibold text-white transition hover:bg-slate-800 dark:bg-sky-400 dark:text-slate-950 dark:hover:bg-sky-300 lg:inline-flex">
+                    View Résumé
+                  </a>
+                )}
                 <DarkModeToggle
                   isDarkMode={isDarkMode}
                   toggleDarkMode={toggleDarkMode}
@@ -236,20 +228,21 @@ const Navbar: React.FC = () => {
                   </div>
 
                   <div className="grid grid-cols-1 gap-2.5">
-                    <Link
-                      href="/os"
-                      onClick={closeDrawer}
-                      className="inline-flex h-11 items-center justify-center rounded-full border border-slate-200/80 bg-white px-4 text-sm font-semibold text-slate-800 transition duration-200 hover:border-sky-200 hover:bg-sky-50 hover:text-sky-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-sky-700 dark:hover:bg-sky-950/40 dark:hover:text-sky-200"
+                    {profile.personal_details.links.resume && (
+                      <a href={profile.personal_details.links.resume} target="_blank" rel="noreferrer" onClick={closeDrawer} className="inline-flex h-11 items-center justify-center rounded-full bg-slate-950 px-4 text-sm font-semibold text-white dark:bg-sky-400 dark:text-slate-950">
+                        View Résumé
+                      </a>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        window.dispatchEvent(new Event("portfolio:open-chat"));
+                        closeDrawer();
+                      }}
+                      className="inline-flex h-11 items-center justify-center rounded-full border border-slate-200/80 bg-white px-4 text-sm font-semibold text-slate-800 transition duration-200 hover:border-sky-200 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                     >
-                      OS View
-                    </Link>
-                    <a
-                      href="#contact"
-                      onClick={closeDrawer}
-                      className="inline-flex h-11 items-center justify-center rounded-full bg-slate-950 px-4 text-sm font-semibold text-white transition duration-200 hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
-                    >
-                      Work With Me
-                    </a>
+                      Chat
+                    </button>
                   </div>
                 </div>
               </div>

@@ -76,6 +76,7 @@ const toFallbackProject = (project: FeaturedProject, index: number): Project => 
     slug,
     title: project.title,
     description: project.description,
+    displayOrder: index * 10,
     technology: project.technologies ?? [],
     githubLink: project.links.github,
     liveLink: project.links.live,
@@ -108,7 +109,16 @@ const mergeProfileRecordWithFile = (
   record: PortfolioContentRecord
 ): ProfileContent =>
   normalizeProfileContent({
-    personal_details: record.personal_details ?? fileProfile.personal_details,
+    personal_details: record.personal_details
+      ? {
+          ...fileProfile.personal_details,
+          ...record.personal_details,
+          links: {
+            ...fileProfile.personal_details.links,
+            ...(record.personal_details.links ?? {}),
+          },
+        }
+      : fileProfile.personal_details,
     preferences: record.preferences ?? fileProfile.preferences,
     history: record.history ?? fileProfile.history,
     metadata: record.metadata ?? fileProfile.metadata,
@@ -250,6 +260,7 @@ function pickAdminProfileContent(
     linkedin: profile.personal_details.links.linkedin,
     github: profile.personal_details.links.github,
     website: profile.personal_details.links.website,
+    resumeUrl: profile.personal_details.links.resume ?? "",
     contactHeading: profile.content.contact.heading,
     contactIntro: profile.content.contact.intro,
     contactBannerHeading: profile.content.contact.banner_heading,
@@ -379,6 +390,7 @@ export async function updateAdminProfileContent(
         website: data.website,
         github: data.github,
         linkedin: data.linkedin,
+        resume: data.resumeUrl,
       },
     },
     content: {

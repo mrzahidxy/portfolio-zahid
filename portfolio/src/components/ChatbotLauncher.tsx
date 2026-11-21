@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const CHATBOT_WIDGET_URL =
   process.env.NEXT_PUBLIC_CHATBOT_WIDGET_URL || "http://localhost:3000/widget";
@@ -8,8 +8,14 @@ const CHATBOT_WIDGET_URL =
 export default function ChatbotLauncher() {
   const [isOpen, setIsOpen] = useState(false);
 
+  useEffect(() => {
+    const openChat = () => setIsOpen(true);
+    window.addEventListener("portfolio:open-chat", openChat);
+    return () => window.removeEventListener("portfolio:open-chat", openChat);
+  }, []);
+
   return (
-    <div className="fixed bottom-6 right-4 z-[9999] flex flex-col items-end gap-4 sm:bottom-8 sm:right-6">
+    <div className={`fixed bottom-6 right-4 z-[9999] items-end gap-4 sm:bottom-8 sm:right-6 ${isOpen ? "flex flex-col" : "hidden sm:flex sm:flex-col"}`}>
       {isOpen ? (
         <div className="animate-[chatbotPop_180ms_ease-out] overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.16)] dark:border-slate-800 dark:bg-slate-950">
           <div className="h-[min(600px,calc(100vh-7rem))] w-[calc(100vw-2rem)] overflow-hidden rounded-3xl bg-white dark:bg-slate-950 sm:h-[600px] sm:w-[400px]">

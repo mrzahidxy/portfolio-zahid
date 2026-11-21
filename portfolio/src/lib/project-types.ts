@@ -3,6 +3,9 @@ export interface Project {
   title: string;
   slug?: string;
   description: string;
+  summary?: string;
+  highlights?: string[];
+  displayOrder?: number;
   technology: string[];
   githubLink: string;
   liveLink?: string;
@@ -15,13 +18,18 @@ export interface Project {
 export interface ProjectPayload {
   title: string;
   description: string;
+  summary?: string;
+  highlights: string;
+  displayOrder: number;
   technology: string;
   githubLink: string;
   liveLink?: string;
 }
 
-export interface ProjectFormValues extends Omit<ProjectPayload, "liveLink"> {
+export interface ProjectFormValues extends Omit<ProjectPayload, "liveLink" | "displayOrder"> {
   liveLink: string;
+  displayOrder: string;
+  summary: string;
   img?: string;
 }
 

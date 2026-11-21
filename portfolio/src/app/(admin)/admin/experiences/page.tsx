@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import DefaultLoader from "@/components/common/DefaultLoader";
 import { useAxiosWithAuth } from "@/helper/request-method";
 import ExperienceTable from "./experienceTable";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faPlus, faRotateRight } from "@fortawesome/free-solid-svg-icons";
 
 interface Experience {
   id?: string;
@@ -82,9 +84,11 @@ export default function ExperienceManagementPage() {
         <button
           type="button"
           onClick={fetchExperiences}
-          className="mt-4 rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-sky-400"
+          aria-label="Refresh experience entries"
+          title="Refresh experience entries"
+          className="admin-icon-action mt-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white transition hover:bg-blue-500"
         >
-          Refresh
+          <FontAwesomeIcon icon={faRotateRight} aria-hidden="true" className="h-4 w-4" />
         </button>
       </div>
     );
@@ -97,9 +101,9 @@ export default function ExperienceManagementPage() {
           <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
             Experience
           </p>
-          <h1 className="text-xl font-semibold text-slate-900 dark:text-white">
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
             Manage Experience
-          </h1>
+          </h2>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Keep your role history as a separate list, just like projects.
           </p>
@@ -107,14 +111,16 @@ export default function ExperienceManagementPage() {
         <div className="flex flex-wrap items-center gap-2.5">
           <Link
             href="/admin/experiences/add"
-            className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
+            className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-500"
           >
+            <FontAwesomeIcon icon={faPlus} aria-hidden="true" className="h-4 w-4" />
             Add Experience
           </Link>
           <Link
             href="/admin"
-            className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:text-white"
+            className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:text-white"
           >
+            <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" className="h-3.5 w-3.5" />
             Dashboard
           </Link>
         </div>
@@ -122,6 +128,7 @@ export default function ExperienceManagementPage() {
 
       {feedback && (
         <div
+          role={feedback.type === "success" ? "status" : "alert"}
           className={`rounded-xl border p-4 text-sm ${
             feedback.type === "success"
               ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-200"

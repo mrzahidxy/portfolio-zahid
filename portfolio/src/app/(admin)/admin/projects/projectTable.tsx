@@ -1,4 +1,13 @@
 import Image from "next/image";
+import {
+  faBoxArchive,
+  faImage,
+  faPenToSquare,
+  faRotateLeft,
+  faTrashCan,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import AdminIconButton from "../../AdminIconButton";
 import React from 'react'
 import type { ProjectTableProps } from "@/lib/project-types";
 
@@ -23,7 +32,7 @@ export default function ProjectTable({
             <th className="w-[7%] px-4 py-3 text-center font-semibold">Live</th>
             <th className="w-[8%] px-4 py-3 text-center font-semibold">Image</th>
             <th className="w-[8%] px-4 py-3 text-center font-semibold">Status</th>
-            <th className="w-[10rem] px-4 py-3 text-left font-semibold">Actions</th>
+            <th className="w-[13rem] px-4 py-3 text-left font-semibold">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-200 bg-white dark:divide-slate-800 dark:bg-slate-950/20">
@@ -70,20 +79,22 @@ export default function ProjectTable({
                 </div>
               </td>
               <td className="px-4 py-3 align-top">
-                <div className="flex min-w-[9rem] flex-col items-stretch gap-2">
-                  <button
+                <div className="flex min-w-[12.5rem] items-center gap-1.5">
+                  <AdminIconButton
+                    label={`Edit ${project.title}`}
+                    icon={faPenToSquare}
                     onClick={() => onUpdate(project._id)}
                     disabled={Boolean(busyAction)}
-                    className="rounded-md border border-slate-300 px-3 py-1.5 text-center text-xs font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:bg-slate-800"
-                  >
-                    Update
-                  </button>
+                  />
                   <label
-                    className={`cursor-pointer rounded-md border border-sky-500/50 px-3 py-1.5 text-center text-xs font-medium text-sky-700 transition hover:border-sky-400 hover:bg-sky-500/10 dark:text-sky-300 ${
-                      busyAction ? "pointer-events-none opacity-60" : ""
-                    }`}
+                    aria-label={`Change image for ${project.title}`}
+                    title={busyAction === `image-${project._id}` ? "Uploading image" : `Change image for ${project.title}`}
+                    className={`admin-icon-action inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border border-blue-200 text-blue-700 transition hover:bg-blue-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 dark:border-blue-900/60 dark:text-blue-300 dark:hover:bg-blue-950/50 ${busyAction ? "pointer-events-none opacity-45" : ""}`}
                   >
-                    {busyAction === `image-${project._id}` ? "Uploading..." : "Change image"}
+                    <FontAwesomeIcon icon={faImage} aria-hidden="true" className="h-4 w-4" />
+                    <span className="sr-only">
+                      {busyAction === `image-${project._id}` ? "Uploading image" : `Change image for ${project.title}`}
+                    </span>
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp,image/gif"
@@ -96,29 +107,24 @@ export default function ProjectTable({
                       }}
                     />
                   </label>
-                  <button
+                  <AdminIconButton
+                    label={project.isArchived ? `Restore ${project.title}` : `Archive ${project.title}`}
+                    icon={project.isArchived ? faRotateLeft : faBoxArchive}
+                    tone="accent"
                     onClick={() =>
                       project.isArchived
                         ? onRestore(project._id)
                         : onArchive(project._id)
                     }
                     disabled={Boolean(busyAction)}
-                    className="rounded-md border border-amber-500/50 px-3 py-1.5 text-center text-xs font-medium text-amber-700 transition hover:border-amber-400 hover:bg-amber-500/10 dark:text-amber-300"
-                  >
-                    {busyAction === `archive-${project._id}` ||
-                    busyAction === `restore-${project._id}`
-                      ? "Saving..."
-                      : project.isArchived
-                        ? "Restore"
-                        : "Archive"}
-                  </button>
-                  <button
+                  />
+                  <AdminIconButton
+                    label={`Delete ${project.title}`}
+                    icon={faTrashCan}
+                    tone="danger"
                     onClick={() => onDelete(project._id)}
                     disabled={Boolean(busyAction)}
-                    className="rounded-md border border-red-500/50 px-3 py-1.5 text-center text-xs font-medium text-red-600 transition hover:border-red-400 hover:bg-red-500/10 dark:text-red-200"
-                  >
-                    {busyAction === `delete-${project._id}` ? "Deleting..." : "Delete"}
-                  </button>
+                  />
                 </div>
               </td>
             </tr>

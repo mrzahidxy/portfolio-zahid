@@ -7,6 +7,8 @@ import Image from "next/image";
 type Props = {
   project: {
     description: string;
+    summary?: string;
+    highlights?: string[];
     img: string;
     technology: Array<string>;
     githubLink: string;
@@ -29,8 +31,9 @@ const FeatureCard: React.FC<Props> = ({ project }) => {
             className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-lg font-semibold text-slate-600 dark:text-slate-300">
-            Image coming soon
+          <div className="flex h-full flex-col items-center justify-center gap-2 px-6 text-center text-slate-600 dark:text-slate-300">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em]">Project Preview</span>
+            <span className="text-lg font-semibold">{project.title}</span>
           </div>
         )}
         {project.img && <div className="absolute inset-0 bg-gradient-to-t from-slate-950/15 via-transparent to-transparent" />}
@@ -53,8 +56,18 @@ const FeatureCard: React.FC<Props> = ({ project }) => {
             {project.title}
           </h2>
           <p className="overflow-hidden text-[13px] leading-6 text-slate-600 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4] dark:text-slate-300 md:min-h-[96px]">
-            {project.description}
+            {project.summary || project.description}
           </p>
+          {project.highlights && project.highlights.length > 0 && (
+            <ul className="space-y-1 text-xs leading-5 text-slate-600 dark:text-slate-300">
+              {project.highlights.slice(0, 3).map((highlight, index) => (
+                <li key={`${index}-${highlight}`} className="flex gap-2">
+                  <span aria-hidden="true" className="text-sky-500">•</span>
+                  <span>{highlight}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <div className="mt-auto flex flex-col gap-2 border-t border-slate-200/70 pt-4 text-[13px] font-semibold sm:flex-row sm:flex-wrap sm:items-center dark:border-slate-800/80">

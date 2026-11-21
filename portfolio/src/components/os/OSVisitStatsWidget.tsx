@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { isVisitCounterEnabled } from "@/lib/visit-counter";
 
 const DEFAULT_SOCKET_URL =
   process.env.NODE_ENV === "development" ? "ws://localhost:8010" : "";
@@ -9,7 +10,8 @@ const DEFAULT_API_URL =
 const SOCKET_URL =
   process.env.NEXT_PUBLIC_WEBSOCKET_URL?.trim() || DEFAULT_SOCKET_URL;
 const API_URL = process.env.NEXT_PUBLIC_VISIT_API_URL?.trim() || DEFAULT_API_URL;
-const shouldConnectVisitCounter = Boolean(SOCKET_URL);
+const shouldConnectVisitCounter =
+  isVisitCounterEnabled && Boolean(SOCKET_URL);
 
 export default function OSVisitStatsWidget() {
   const [visitCount, setVisitCount] = useState(0);
@@ -93,7 +95,7 @@ export default function OSVisitStatsWidget() {
 
   return (
     <aside
-      className="fixed bottom-16 left-3 z-20 flex min-h-14 max-w-[calc(100vw-1.5rem)] items-center gap-3 rounded-lg border border-white/80 bg-white/[0.84] py-2 pl-4 pr-9 shadow-[0_14px_36px_rgba(26,47,87,0.15)] backdrop-blur-xl dark:border-slate-700/80 dark:bg-slate-950/[0.78] sm:left-6"
+      className="fixed bottom-16 left-3 z-20 hidden min-h-14 max-w-[calc(100vw-1.5rem)] sm:flex items-center gap-3 rounded-lg border border-white/80 bg-white/[0.84] py-2 pl-4 pr-9 shadow-[0_14px_36px_rgba(26,47,87,0.15)] backdrop-blur-xl dark:border-slate-700/80 dark:bg-slate-950/[0.78] sm:left-6"
       aria-live="polite"
       aria-label="Visit statistics"
     >

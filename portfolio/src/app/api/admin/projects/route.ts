@@ -48,6 +48,9 @@ export async function POST(req: NextRequest) {
     const parsed = projectPayloadSchema.safeParse({
       title: formData.get("title"),
       description: formData.get("description"),
+      summary: formData.get("summary") ?? "",
+      highlights: formData.get("highlights") ?? "",
+      displayOrder: formData.get("displayOrder") ?? "1000",
       technology: formData.get("technology"),
       githubLink: formData.get("githubLink"),
       liveLink: formData.get("liveLink") || "",

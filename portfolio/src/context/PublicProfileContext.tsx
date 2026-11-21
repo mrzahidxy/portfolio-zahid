@@ -16,8 +16,6 @@ interface PublicProfileContextValue {
   loading: boolean;
 }
 
-const PROFILE_CACHE_KEY = "portfolio:public-profile";
-
 const emptyPublicProfileData: PublicProfileData = {
   personal_details: {
     name: "",
@@ -112,29 +110,15 @@ export function PublicProfileProvider({
     let isActive = true;
 
     const loadProfile = async () => {
-      const cachedProfile = window.localStorage.getItem(PROFILE_CACHE_KEY);
-
-      if (cachedProfile) {
-        try {
-          setProfile(JSON.parse(cachedProfile) as PublicProfileData);
-        } catch {
-          window.localStorage.removeItem(PROFILE_CACHE_KEY);
-        }
-      }
-
       try {
-        const response = await fetch("/api/profile", { cache: "force-cache" });
+        const response = await fetch("/api/profile", { cache: "no-store" });
         const payload = (await response.json()) as PublicProfileApiResponse;
 
         if (isActive && payload.success) {
           setProfile(payload.data);
-          window.localStorage.setItem(
-            PROFILE_CACHE_KEY,
-            JSON.stringify(payload.data)
-          );
         }
       } catch {
-        // Keep cached or empty profile content and avoid showing a loader.
+        // Keep the server-provided or empty profile content if the request fails.
       }
     };
 

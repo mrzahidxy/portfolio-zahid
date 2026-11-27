@@ -1,5 +1,5 @@
-import { promises as fs } from "fs";
-import path from "path";
+import bundledProfile from "@/data/profile.json";
+import { revalidateTag, unstable_cache } from "next/cache";
 import dbConnect, { dbConnectForPublicRead } from "@/lib/dbConnect";
 import { createLogger } from "@/lib/logger";
 import PortfolioContent from "@/models/PortfolioContent";
@@ -14,8 +14,8 @@ import {
 import type { Project } from "./project-types";
 import type { AdminExperiencePayload } from "./experience-admin";
 
-const PROFILE_PATH = path.join(process.cwd(), "src", "data", "profile.json");
 const PORTFOLIO_CONTENT_KEY = "primary";
+const PUBLIC_PROFILE_CACHE_TAG = "public-profile";
 const log = createLogger({ context: "lib/profile-content" });
 
 const toSlug = (value: string) =>
@@ -84,19 +84,16 @@ const toFallbackProject = (project: FeaturedProject, index: number): Project => 
   };
 };
 
-async function readProfileFromFile(): Promise<ProfileContent> {
-  const raw = await fs.readFile(PROFILE_PATH, "utf8");
-  const parsed = JSON.parse(raw) as ProfileContent;
-
-  return normalizeProfileContent(parsed);
+async function readDefaultProfile(): Promise<ProfileContent> {
+  return normalizeProfileContent(bundledProfile as ProfileContent);
 }
 
 export async function readStaticProfileContent(): Promise<ProfileContent> {
-  return readProfileFromFile();
+  return readDefaultProfile();
 }
 
 export async function readStaticPublicProfileContent(): Promise<PublicProfileData> {
-  return pickPublicProfileContent(await readProfileFromFile());
+  return pickPublicProfileContent(await readDefaultProfile());
 }
 
 type PortfolioContentRecord = Partial<ProfileContent> & {
@@ -151,84 +148,45 @@ const withEmptyExperiences = (profile: ProfileContent): ProfileContent =>
     },
   });
 
-export async function readProfileContent(): Promise<ProfileContent> {
-  const fileProfile = await readProfileFromFile();
-
-  try {
-    const connection = await dbConnect();
-
-    if (!connection) {
-      return fileProfile;
-    }
-
-    const record = await PortfolioContent.findOne({
-      key: PORTFOLIO_CONTENT_KEY,
-    }).lean<PortfolioContentRecord>();
-
-    if (!record) {
-      return fileProfile;
-    }
-
-    return mergeProfileRecordWithFile(fileProfile, record);
-  } catch (error) {
-    log.warn("Falling back to file-based profile content.", error);
-    return fileProfile;
-  }
-}
-
 async function readProfileContentForExperienceApi(): Promise<ProfileContent> {
-  const fileProfile = await readProfileFromFile();
+  const fileProfile = await readDefaultProfile();
+  const connection = await dbConnect();
 
-  try {
-    const connection = await dbConnect();
-
-    if (!connection) {
-      return fileProfile;
-    }
-
-    const record = await PortfolioContent.findOne({
-      key: PORTFOLIO_CONTENT_KEY,
-    }).lean<PortfolioContentRecord>();
-
-    if (!record) {
-      return withEmptyExperiences(fileProfile);
-    }
-
-    return mergeProfileRecordWithFile(fileProfile, record);
-  } catch (error) {
-    log.warn("Falling back to file-based experience content.", error);
-    return fileProfile;
+  if (!connection) {
+    throw new Error("Database is required for portfolio administration.");
   }
+
+  const record = await PortfolioContent.findOne({
+    key: PORTFOLIO_CONTENT_KEY,
+  }).lean<PortfolioContentRecord>();
+
+  if (!record) {
+    return withEmptyExperiences(fileProfile);
+  }
+
+  return mergeProfileRecordWithFile(fileProfile, record);
 }
 
 async function writeProfileContent(profile: ProfileContent): Promise<ProfileContent> {
   const normalizedProfile = normalizeProfileContent(profile);
 
-  await fs.writeFile(
-    PROFILE_PATH,
-    `${JSON.stringify(normalizedProfile, null, 2)}\n`
-  );
-
-  try {
-    const connection = await dbConnect();
-
-    if (connection) {
-      await PortfolioContent.findOneAndUpdate(
-        { key: PORTFOLIO_CONTENT_KEY },
-        {
-          key: PORTFOLIO_CONTENT_KEY,
-          personal_details: normalizedProfile.personal_details,
-          preferences: normalizedProfile.preferences,
-          history: normalizedProfile.history,
-          metadata: normalizedProfile.metadata,
-          content: normalizedProfile.content,
-        },
-        { upsert: true, new: true, setDefaultsOnInsert: true }
-      );
-    }
-  } catch (error) {
-    log.error("Failed to sync portfolio content to database.", error);
+  const connection = await dbConnect();
+  if (!connection) {
+    throw new Error("Database is required to save portfolio content.");
   }
+  await PortfolioContent.findOneAndUpdate(
+    { key: PORTFOLIO_CONTENT_KEY },
+    {
+      key: PORTFOLIO_CONTENT_KEY,
+      personal_details: normalizedProfile.personal_details,
+      preferences: normalizedProfile.preferences,
+      history: normalizedProfile.history,
+      metadata: normalizedProfile.metadata,
+      content: normalizedProfile.content,
+    },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
+  );
+  revalidateTag(PUBLIC_PROFILE_CACHE_TAG);
 
   return normalizedProfile;
 }
@@ -284,14 +242,13 @@ function pickPublicProfileContent(
   };
 }
 
-export async function readPublicProfileApiContent(): Promise<PublicProfileData> {
-  const fileProfile = await readProfileFromFile();
-
-  try {
+const readCachedPublicProfile = unstable_cache(
+  async (): Promise<PublicProfileData> => {
+    const fileProfile = await readDefaultProfile();
     const connection = await dbConnectForPublicRead();
 
     if (!connection) {
-      return pickPublicProfileContent(fileProfile);
+      throw new Error("Database unavailable for public profile.");
     }
 
     const record = await PortfolioContent.findOne({
@@ -303,20 +260,28 @@ export async function readPublicProfileApiContent(): Promise<PublicProfileData> 
     }
 
     return pickPublicProfileContent(mergeProfileRecordWithFile(fileProfile, record));
+  },
+  ["public-profile"],
+  { revalidate: 60, tags: [PUBLIC_PROFILE_CACHE_TAG] }
+);
+
+export async function readPublicProfileApiContent(): Promise<PublicProfileData> {
+  try {
+    return await readCachedPublicProfile();
   } catch (error) {
-    log.warn("Falling back to file-based public profile content.", error);
-    return pickPublicProfileContent(fileProfile);
+    log.warn("Falling back to default public profile content.", error);
+    return pickPublicProfileContent(await readDefaultProfile());
   }
 }
 
 export async function listPublicFallbackProjects(): Promise<Project[]> {
-  const fileProfile = await readProfileFromFile();
+  const fileProfile = await readDefaultProfile();
 
   return (fileProfile.history.featured_projects ?? []).map(toFallbackProject);
 }
 
 export async function listPublicExperiences(): Promise<ProfileExperience[]> {
-  const fileProfile = await readProfileFromFile();
+  const fileProfile = await readDefaultProfile();
 
   try {
     const connection = await dbConnectForPublicRead();
@@ -335,34 +300,13 @@ export async function listPublicExperiences(): Promise<ProfileExperience[]> {
 
     return mergeProfileRecordWithFile(fileProfile, record).history.experiences;
   } catch (error) {
-    log.warn("Falling back to file-based experience content.", error);
+    log.warn("Falling back to default experience content.", error);
     return fileProfile.history.experiences;
   }
 }
 
 export async function readAdminProfileApiContent(): Promise<AdminProfilePayload> {
-  const fileProfile = await readProfileFromFile();
-
-  try {
-    const connection = await dbConnect();
-
-    if (!connection) {
-      return pickAdminProfileContent(fileProfile);
-    }
-
-    const record = await PortfolioContent.findOne({
-      key: PORTFOLIO_CONTENT_KEY,
-    }).lean<PortfolioContentRecord>();
-
-    if (!record) {
-      return pickAdminProfileContent(fileProfile);
-    }
-
-    return pickAdminProfileContent(mergeProfileRecordWithFile(fileProfile, record));
-  } catch (error) {
-    log.warn("Falling back to file-based admin profile content.", error);
-    return pickAdminProfileContent(fileProfile);
-  }
+  return pickAdminProfileContent(await readProfileContentForExperienceApi());
 }
 
 export async function updateAdminProfileContent(

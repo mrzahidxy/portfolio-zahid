@@ -19,6 +19,8 @@ The example points to the chatbot on port 3000 and the visit counter on port 808
 ## Content and admin
 
 - Edit fallback profile content in `src/data/profile.json`, or manage database-backed content through `/admin` after signing in at `/admin/login`.
+- Admin profile and experience changes require MongoDB; the bundled fallback is read-only at runtime.
+- Public profile reads are cached and become eligible for background refresh after 60 seconds. An admin save invalidates the cache. If a refresh fails, a previously cached profile may remain visible until a refresh succeeds; if no cached profile is available, the bundled default is returned without caching the failure.
 - To seed an admin account and initial content, set `MONGODB_URI`, `PASS_SEC`, `SEED_ADMIN_EMAIL`, and `SEED_ADMIN_PASSWORD`, then run `npm run seed`. The script replaces all project records and overwrites the primary portfolio content; use it only when that reset is intended.
 - The chatbot widget and visit counter are separate services. Set their public URLs in `.env.local` when running them locally or in the Vercel project when deployed.
 
